@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADK System Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
+        .dashboard { max-width: 1200px; margin: 0 auto; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .metric-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .metric-value { font-size: 2em; font-weight: bold; color: #333; }
+        .metric-label { color: #666; margin-top: 5px; }
+        .chart-container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .status-healthy { color: #28a745; }
+        .status-warning { color: #ffc107; }
+        .status-critical { color: #dc3545; }
+        .insights-section { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .insight-item { padding: 10px; border-left: 4px solid #667eea; margin: 10px 0; background: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>ADK System Dashboard</h1>
+            <p>Real-time monitoring and analytics</p>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value status-healthy">100.0%</div>
+                <div class="metric-label">System Health</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">17</div>
+                <div class="metric-label">Active Users</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">3.3s</div>
+                <div class="metric-label">Avg Response Time</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">60</div>
+                <div class="metric-label">Total Errors</div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h3>System Performance Trends</h3>
+            <canvas id="performanceChart" width="400" height="200"></canvas>
+        </div>
+        
+        <div class="insights-section">
+            <h3>Key Insights</h3>
+            <div class="insight-item">
+                <strong>System Status:</strong> healthy
+            </div>
+            <div class="insight-item">
+                <strong>Most Used Tool:</strong> optimization_engine
+            </div>
+            <div class="insight-item">
+                <strong>Peak Usage Hour:</strong> 13:00
+            </div>
+            <div class="insight-item">
+                <strong>Last Updated:</strong> 2025-09-24 01:14:38
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Mock chart data
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['1h ago', '2h ago', '3h ago', '4h ago', '5h ago', 'Now'],
+                datasets: [{
+                    label: 'Response Time (s)',
+                    data: [2.1, 2.3, 2.0, 2.5, 2.2, 2.4],
+                    borderColor: 'rgb(102, 126, 234)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+        

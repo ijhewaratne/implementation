@@ -1,0 +1,620 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branitz Energy Decision AI - Combined Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 10px;
+        }
+        
+        .nav-tab {
+            padding: 15px 30px;
+            margin: 0 5px;
+            background: transparent;
+            border: none;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-tab.active {
+            background: rgba(255,255,255,0.2);
+            font-weight: bold;
+        }
+        
+        .nav-tab:hover {
+            background: rgba(255,255,255,0.15);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .metric {
+            text-align: center;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .decision-card {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .decision-card h2 {
+            color: white;
+            border-bottom-color: rgba(255,255,255,0.3);
+        }
+        
+        .decision-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .decision-main {
+            text-align: center;
+        }
+        
+        .decision-scenario {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .decision-confidence {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .decision-rationale {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-good { background-color: #48bb78; }
+        .status-warning { background-color: #ed8936; }
+        .status-error { background-color: #f56565; }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .results-table th,
+        .results-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .results-table th {
+            background: #f7fafc;
+            font-weight: bold;
+            color: #4a5568;
+        }
+        
+        .results-table tr:hover {
+            background: #f7fafc;
+        }
+        
+        .timestamp {
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .decision-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .nav-tab {
+                margin: 2px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏗️ Branitz Energy Decision AI</h1>
+            <p>Comprehensive System Dashboard & Analysis Results</p>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('overview')">📊 System Overview</button>
+            <button class="nav-tab" onclick="showTab('results')">📋 Detailed Results</button>
+            <button class="nav-tab" onclick="showTab('charts')">📈 Analytics</button>
+        </div>
+        
+        <!-- System Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="dashboard-grid">
+                <!-- Decision Card -->
+                <div class="card decision-card">
+                    <h2>🎯 System Recommendation</h2>
+                    <div class="decision-content">
+                        <div class="decision-main">
+                            <div class="decision-scenario">DH</div>
+                            <div class="decision-confidence">Confidence: medium</div>
+                        </div>
+                        <div class="decision-rationale">
+                            <strong>Rationale:</strong><br>
+                            Feeder utilization 85.0% ≥ 80% threshold.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- LFA Card -->
+                <div class="card">
+                    <h2>📊 Load Forecasting Agent (LFA)</h2>
+                    <div class="metric-grid">
+                        <div class="metric">
+                            <div class="metric-value">1</div>
+                            <div class="metric-label">Buildings</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">43.8</div>
+                            <div class="metric-label">Annual Heat (MWh)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- CHA Card -->
+                <div class="card">
+                    <h2>🌡️ Centralized Heating Agent (CHA)</h2>
+                    <div class="metric-grid">
+                        <div class="metric">
+                            <div class="metric-value">0.45</div>
+                            <div class="metric-label">Total Length (km)</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">0.633</div>
+                            <div class="metric-label">Mean Velocity (m/s)</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">0.040</div>
+                            <div class="metric-label">Max ΔP (bar)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- DHA Card -->
+                <div class="card">
+                    <h2>⚡ Decentralized Heating Agent (DHA)</h2>
+                    <div class="metric-grid">
+                        <div class="metric">
+                            <div class="metric-value">85.0%</div>
+                            <div class="metric-label">Max Feeder Utilization</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- EAA Card -->
+                <div class="card">
+                    <h2>💰 Economics Analysis Agent (EAA)</h2>
+                    <div class="metric-grid">
+                        <div class="metric">
+                            <div class="metric-value">651.6</div>
+                            <div class="metric-label">LCoH Mean (€/MWh)</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">521.7 - 813.5</div>
+                            <div class="metric-label">95% CI (€/MWh)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Detailed Results Tab -->
+        <div id="results" class="tab-content">
+            <div class="card full-width">
+                <h2>📋 Detailed Results Summary</h2>
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Agent</th>
+                            <th>Metric</th>
+                            <th>Value</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="2">LFA</td>
+                            <td>Buildings Analyzed</td>
+                            <td>1</td>
+                            <td><span class="status-indicator status-good"></span>Active</td>
+                        </tr>
+                        <tr>
+                            <td>Annual Heat Demand</td>
+                            <td>43.80 MWh</td>
+                            <td><span class="status-indicator status-good"></span>Complete</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="4">CHA</td>
+                            <td>Total Network Length</td>
+                            <td>0.45 km</td>
+                            <td><span class="status-indicator status-good"></span>Complete</td>
+                        </tr>
+                        <tr>
+                            <td>Supply / Return Length</td>
+                            <td>0.00 / 0.00 km</td>
+                            <td><span class="status-indicator status-good"></span>Complete</td>
+                        </tr>
+                        <tr>
+                            <td>Mean Velocity</td>
+                            <td>0.633 m/s</td>
+                            <td><span class="status-indicator status-good"></span>Good</td>
+                        </tr>
+                        <tr>
+                            <td>Max Pressure Drop</td>
+                            <td>0.040 bar</td>
+                            <td><span class="status-indicator status-good"></span>Good</td>
+                        </tr>
+                        <tr>
+                            <td>DHA</td>
+                            <td>Max Feeder Utilization</td>
+                            <td>85.0%</td>
+                            <td><span class="status-indicator status-warning"></span>Warning</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="3">EAA</td>
+                            <td>LCoH Mean</td>
+                            <td>651.6 €/MWh</td>
+                            <td><span class="status-indicator status-good"></span>Complete</td>
+                        </tr>
+                        <tr>
+                            <td>LCoH 95% CI</td>
+                            <td>[521.7 - 813.5] €/MWh</td>
+                            <td><span class="status-indicator status-good"></span>Complete</td>
+                        </tr>
+                        <tr>
+                            <td>CO₂ Emissions</td>
+                            <td>2.30 kg/MWh</td>
+                            <td><span class="status-indicator status-good"></span>Complete</td>
+                        </tr>
+                        <tr>
+                            <td>TCA</td>
+                            <td>Recommended Scenario</td>
+                            <td>DH</td>
+                            <td><span class="status-indicator status-good"></span>Decision Made</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Analytics Tab -->
+        <div id="charts" class="tab-content">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h2>📊 Building Heat Demand</h2>
+                    <div class="chart-container">
+                        <canvas id="lfaChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>🌡️ Network Length Distribution</h2>
+                    <div class="chart-container">
+                        <canvas id="chaChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>⚡ Feeder Utilization</h2>
+                    <div class="chart-container">
+                        <canvas id="dhaChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>💰 LCoH Distribution</h2>
+                    <div class="chart-container">
+                        <canvas id="eaaChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="timestamp">
+            Generated on 2025-09-04 12:02:42 UTC
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+        
+        // LFA Chart - Building Heat Demand
+        const lfaCtx = document.getElementById('lfaChart').getContext('2d');
+        const lfaData = [43.8];
+        const lfaLabels = ["B1"];
+        
+        new Chart(lfaCtx, {
+            type: 'bar',
+            data: {
+                labels: lfaLabels,
+                datasets: [{
+                    label: 'Annual Heat Demand (MWh)',
+                    data: lfaData,
+                    backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Heat Demand (MWh)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // CHA Chart - Pipe Length Distribution
+        const chaCtx = document.getElementById('chaChart').getContext('2d');
+        new Chart(chaCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Supply Pipes', 'Return Pipes'],
+                datasets: [{
+                    data: [0.00, 0.00],
+                    backgroundColor: ['rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)'],
+                    borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+        
+        // DHA Chart - Feeder Utilization
+        const dhaCtx = document.getElementById('dhaChart').getContext('2d');
+        const dhaData = [65.0, 78.0, 85.0];
+        const dhaLabels = ["Feeder 0", "Feeder 1", "Feeder 2"];
+        
+        new Chart(dhaCtx, {
+            type: 'line',
+            data: {
+                labels: dhaLabels,
+                datasets: [{
+                    label: 'Feeder Utilization (%)',
+                    data: dhaData,
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Utilization (%)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // EAA Chart - LCoH Distribution
+        const eaaCtx = document.getElementById('eaaChart').getContext('2d');
+        new Chart(eaaCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Mean', 'Median', '2.5%', '97.5%'],
+                datasets: [{
+                    label: 'LCoH (€/MWh)',
+                    data: [
+                        651.6,
+                        646.6,
+                        521.7,
+                        813.5
+                    ],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(255, 99, 132, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'LCoH (€/MWh)'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

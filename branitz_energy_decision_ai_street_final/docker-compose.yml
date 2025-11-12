@@ -1,0 +1,140 @@
+# Docker Compose for Branitz Energy Decision AI - Enhanced Multi-Agent System with Google ADK
+version: '3.8'
+
+services:
+  # Main ADK System Service
+  adk-system:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: adk-production
+    container_name: branitz-adk-system
+    environment:
+      - ADK_ENABLED=true
+      - FALLBACK_ENABLED=true
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - PYTHONPATH=/app
+    volumes:
+      - ./data:/app/data:ro
+      - ./configs:/app/configs:ro
+      - ./processed:/app/processed
+      - ./logs:/app/logs
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "from agents.copy.run_enhanced_agent_system import ADKAgentRunner; print('ADK System Healthy')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - branitz-network
+
+  # Development Service
+  adk-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: branitz-adk-dev
+    environment:
+      - ADK_ENABLED=true
+      - FALLBACK_ENABLED=true
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - PYTHONPATH=/app
+    volumes:
+      - .:/app
+      - /app/venv
+    ports:
+      - "8888:8888"  # Jupyter
+      - "8001:8000"  # Development server
+    command: ["python", "scripts/deploy_adk_system.py", "--environment", "development"]
+    networks:
+      - branitz-network
+    profiles:
+      - dev
+
+  # Testing Service
+  adk-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: branitz-adk-test
+    environment:
+      - ADK_ENABLED=true
+      - FALLBACK_ENABLED=true
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - PYTHONPATH=/app
+    volumes:
+      - .:/app
+    command: ["python", "-m", "pytest", "tests/", "-v"]
+    networks:
+      - branitz-network
+    profiles:
+      - test
+
+  # Production Service
+  adk-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: branitz-adk-prod
+    environment:
+      - ADK_ENABLED=true
+      - FALLBACK_ENABLED=true
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - PYTHONPATH=/app
+    volumes:
+      - ./data:/app/data:ro
+      - ./configs:/app/configs:ro
+      - ./processed:/app/processed
+      - ./logs:/app/logs
+    ports:
+      - "8002:8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - branitz-network
+    profiles:
+      - prod
+
+  # Monitoring Service (optional)
+  monitoring:
+    image: prom/prometheus:latest
+    container_name: branitz-monitoring
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - branitz-network
+    profiles:
+      - monitoring
+
+  # Logging Service (optional)
+  logging:
+    image: elastic/filebeat:latest
+    container_name: branitz-logging
+    volumes:
+      - ./logs:/var/log/branitz:ro
+      - ./monitoring/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+    networks:
+      - branitz-network
+    profiles:
+      - logging
+
+networks:
+  branitz-network:
+    driver: bridge
+
+volumes:
+  processed-data:
+  logs-data:

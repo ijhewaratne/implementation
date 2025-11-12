@@ -1,0 +1,79 @@
+{
+  "basic_metrics": {
+    "lcoh_eur_per_mwh": 4.000228200494097,
+    "co2_kg_per_mwh": 1.4389727619562081e-05,
+    "annual_pumping_kwh": 533.3333333333334,
+    "annual_heat_mwh": 13042780.468311377
+  },
+  "enhanced_metrics": {
+    "total_pipe_capex_eur": 28775.0,
+    "total_pump_power_kw": 0.26666666666666666,
+    "sizing_accuracy_rate": 1.0,
+    "cost_optimization_savings_eur": 0.0
+  },
+  "pipe_cost_breakdown": [
+    {
+      "pipe_id": "supply_1",
+      "diameter_mm": 100.0,
+      "diameter_nominal": "DN 100",
+      "length_m": 100,
+      "cost_per_m_eur": 140.0,
+      "total_cost_eur": 14000.0,
+      "pipe_category": "distribution_pipes",
+      "material_cost_eur": 8400.0,
+      "installation_cost_eur": 4200.0,
+      "insulation_cost_eur": 1400.0
+    },
+    {
+      "pipe_id": "return_1",
+      "diameter_mm": 100.0,
+      "diameter_nominal": "DN 100",
+      "length_m": 100,
+      "cost_per_m_eur": 140.0,
+      "total_cost_eur": 14000.0,
+      "pipe_category": "distribution_pipes",
+      "material_cost_eur": 8400.0,
+      "installation_cost_eur": 4200.0,
+      "insulation_cost_eur": 1400.0
+    },
+    {
+      "pipe_id": "service_1",
+      "diameter_mm": 50.0,
+      "diameter_nominal": "DN 50",
+      "length_m": 10,
+      "cost_per_m_eur": 77.5,
+      "total_cost_eur": 775.0,
+      "pipe_category": "service_connections",
+      "material_cost_eur": 465.0,
+      "installation_cost_eur": 232.5,
+      "insulation_cost_eur": 77.5
+    }
+  ],
+  "cost_optimization_analysis": {
+    "current_capex_eur": 28775.0,
+    "potential_savings_eur": 0.0,
+    "savings_percentage": 0.0,
+    "optimization_recommendations": [],
+    "optimization_feasibility": "low"
+  },
+  "monte_carlo_summary": [
+    {
+      "metric": "lcoh_eur_per_mwh",
+      "mean": 4.000228200494097,
+      "median": 4.000226749052748,
+      "p2_5": 4.0001839647875626,
+      "p97_5": 4.0002833524315795,
+      "annual_pumping_kwh": 533.3333333333334,
+      "annual_heat_mwh": 13042780.468311377
+    },
+    {
+      "metric": "co2_kg_per_mwh",
+      "mean": 1.4389727619562081e-05,
+      "median": 1.4311517887694245e-05,
+      "p2_5": 1.1820622775892439e-05,
+      "p97_5": 1.740098061165859e-05,
+      "annual_pumping_kwh": 533.3333333333334,
+      "annual_heat_mwh": 13042780.468311377
+    }
+  ]
+}

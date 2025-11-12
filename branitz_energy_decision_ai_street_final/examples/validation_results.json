@@ -1,0 +1,27 @@
+{
+  "export_timestamp": "2025-09-24T16:21:43.677369",
+  "export_version": "1.0.0",
+  "validation_results": {
+    "validation_timestamp": "2025-09-24T16:21:43.673523",
+    "output_directory": "examples/test_cha_outputs",
+    "validated_files": 1,
+    "total_violations": 10,
+    "standards_compliance": {},
+    "file_results": {
+      "realistic_cha_output.json": {
+        "status": "error",
+        "message": "'message'",
+        "validated_at": "2025-09-24T16:21:43.677070"
+      }
+    },
+    "summary": {
+      "total_files": 1,
+      "valid_files": 0,
+      "invalid_files": 0,
+      "error_files": 1,
+      "success_rate": 0.0,
+      "total_violations": 10,
+      "standards_compliance": {}
+    }
+  }
+}

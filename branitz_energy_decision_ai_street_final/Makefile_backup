@@ -1,0 +1,373 @@
+# Makefile for Branitz Energy Decision AI Project
+
+.PHONY: help verify run-branitz run-street thesis-data thesis-data-street lfa cha cha-interactive dha dha-interactive te kpi pca caa clean enhanced-agents test-enhanced-agents batch-enhanced-agents egpt results dashboard results-dashboard combined-dashboard figures comprehensive-dashboard street-dashboard
+
+# Default target
+help:
+	@echo "Branitz Energy Decision AI - Available Commands:"
+	@echo ""
+	@echo "  make verify      - Run lint + format check + tests + schema validation"
+	@echo "  make run-branitz - End-to-end slice; produces KPI table + recommendation"
+	@echo "  make run-street  - Fast testing for specific street (requires STREET='...')"
+	@echo "  make thesis-data - Run Thesis Data Integration (replaces LFA)"
+	@echo "  make thesis-data-street - Street-specific data generation (requires STREET='...')"
+	@echo "  make lfa         - Legacy LFA (redirects to thesis-data)"
+	@echo "  make cha         - Run Centralized Heating Agent (pandapipes)"
+	@echo "  make dha         - Run Decentralized Heating Agent (pandapower)"
+	@echo "  make te          - Run Techno-Economic & Emissions analysis (EAA + TCA)"
+	@echo "  make kpi         - Run KPI generation and decision support (TCA)"
+	@echo "  make caa         - Comprehensive Analysis Agent (diagnostics bundle)"
+	@echo "  make enhanced-agents - Run Enhanced Multi-Agent System (ADK-based)"
+	@echo "  make test-enhanced-agents - Test Enhanced Multi-Agent System"
+	@echo "  make batch-enhanced-agents - Run Enhanced Multi-Agent System in batch mode"
+	@echo "  make egpt         - Run EnergyGPT with KPI analysis (requires PROMPT=...)"
+	@echo "  make results      - Extract results table (requires SLUG=...)"
+	@echo "  make dashboard    - Generate comprehensive system dashboard"
+	@echo "  make results-dashboard - Generate focused results dashboard (requires SLUG=...)"
+	@echo "  make combined-dashboard - Generate combined dashboard with tabs"
+	@echo "  make figures      - Generate comprehensive figures (requires SLUG=...)"
+	@echo "  make comprehensive-dashboard - Generate comprehensive dashboard with embedded figures"
+	@echo "  make street-dashboard - Generate street-specific dashboard (requires STREET=... and BUILDINGS=...)"
+	@echo "  make clean       - Clean generated artifacts"
+	@echo ""
+
+# Verify: lint + format check + tests + schema validation
+verify:
+	@echo "🔍 Running verification suite..."
+	@echo "1. Linting with ruff..."
+	@if command -v ruff >/dev/null 2>&1; then \
+		find src agents scripts tests -maxdepth 0 -type d -exec ruff check {} \; 2>/dev/null || true; \
+	else \
+		echo "⚠️  ruff not found, skipping linting"; \
+	fi
+	@echo "2. Formatting with black..."
+	@if command -v black >/dev/null 2>&1; then \
+		find src agents scripts tests -maxdepth 0 -type d -exec black --check {} \; 2>/dev/null || true; \
+	else \
+		echo "⚠️  black not found, skipping formatting check"; \
+	fi
+	@echo "3. Running tests..."
+	PYTHONPATH=. pytest -q
+	@echo "4. Schema validation..."
+	python scripts/validate_json.py
+	@echo "✅ Verification complete!"
+
+# End-to-end run (fork-join DAG)
+run-branitz:
+	@echo "🚀 Running Branitz Energy Decision AI end-to-end (fork-join)..."
+	@echo "1. Load Forecasting Agent (LFA)..."
+	$(MAKE) lfa
+	@echo "2. Running CHA & DHA in parallel (fork)..."
+	$(MAKE) -j 2 cha dha
+	@echo "3. Techno-Economic & Emissions (TE) - join point..."
+	$(MAKE) te
+	@echo "4. Generating KPI summary and recommendation..."
+	$(MAKE) kpi
+	@echo "5. Comprehensive Analysis Agent (CAA)..."
+	$(MAKE) caa
+	@echo "✅ End-to-end analysis complete!"
+	@echo "📊 Results available in:"
+	@echo "   - processed/kpi/kpi_summary.json"
+	@echo "   - docs/branitz_recommendation.html"
+
+# Street-specific run (fast testing)
+run-street:
+	@echo "🏘️ Running Branitz Energy Decision AI for specific street..."
+	@echo "   Street: $(STREET) (default: An der Bahn)"
+	@test -n "$(STREET)" || (echo "❌ Set STREET='...' (e.g., STREET='An der Bahn')"; exit 1)
+	@echo "1. Street-specific data generation..."
+	$(MAKE) thesis-data-street STREET="$(STREET)"
+	@echo "2. Running CHA & DHA in parallel (fork)..."
+	$(MAKE) -j 2 cha dha
+	@echo "3. Techno-Economic Analysis (join)..."
+	$(MAKE) te
+	@echo "4. KPI Generation..."
+	$(MAKE) kpi
+	@echo "5. Street Dashboard..."
+	$(MAKE) street-dashboard STREET="$(STREET)" BUILDINGS=14
+	@echo "✅ Street-specific analysis complete!"
+	@echo "📊 Results available in:"
+	@echo "   - processed/kpi/kpi_summary.json"
+	@echo "   - docs/street_dashboard_$(shell echo $(STREET) | tr '[:upper:]' '[:lower:]' | sed 's/ /_/g' | sed 's/ä/ae/g' | sed 's/ö/oe/g' | sed 's/ü/ue/g').html"
+
+# Thesis Data Integration (replaces LFA)
+thesis-data:
+	@echo "🔥 Running Thesis Data Integration (replaces LFA)..."
+	@echo "   - TRY weather data: 8760-hour temperature profiles"
+	@echo "   - Physics-based heating: temperature-dependent heat demand"
+	@echo "   - Electrical profiles: heat pump load analysis"
+	@echo "   - Output: LFA-compatible JSON files"
+	python -m src.thesis_data_integration --config configs/thesis_data.yml
+	@echo "✅ Generated physics-based heat demand for all buildings"
+	@touch processed/lfa/.ready
+
+# Street-Specific Thesis Data Integration (fast testing)
+thesis-data-street:
+	@echo "🏘️ Running Street-Specific Thesis Data Integration..."
+	@echo "   - Street: $(STREET) (default: An der Bahn)"
+	@echo "   - TRY weather data: 8760-hour temperature profiles"
+	@echo "   - Physics-based heating: temperature-dependent heat demand"
+	@echo "   - Output: LFA-compatible JSON files for specific street"
+	@test -n "$(STREET)" || (echo "❌ Set STREET='...' (e.g., STREET='An der Bahn')"; exit 1)
+	python src/thesis_data_integration_street.py --config configs/thesis_data.yml --street "$(STREET)" --output processed/lfa
+	@echo "✅ Generated physics-based heat demand for street: $(STREET)"
+	@touch processed/lfa/.ready
+
+# Legacy LFA target (redirects to thesis-data)
+lfa: thesis-data
+	@echo "⚠️  LFA redirected to thesis-data integration"
+
+# Sentinel written by LFA when forecasts are ready
+processed/lfa/.ready:  ## created by LFA step
+	@mkdir -p processed/lfa
+	@# LFA command must touch this file when done
+	@touch $@
+
+# ETL Pipeline (Legacy - replaced by thesis-data integration)
+etl: 
+	@echo "⚠️  ETL pipeline obsolete - use 'make thesis-data' instead"
+	@echo "Usage: python -m etl.data_to_lfa --buildings <path> --try <path> --year 2024 --write-meters true"
+	@echo "Example: python -m etl.data_to_lfa --buildings data_16122024/buildings.json --try data_16122024/weather.csv --year 2024 --write-meters true"
+
+etl-16122024:
+	@echo "🔄 Running data16122024 ETL pipeline..."
+	python -m etl.data16122024_to_lfa \
+		--buildings data_16122024/buildings.csv \
+		--weather data_16122024/weather.csv \
+		--config configs/etl_data16122024.yml \
+		--write-meters true
+
+# lfa-train: Obsolete - LFA replaced by thesis-data integration
+
+etl-graph:
+	@echo "🔄 Running ETL with graph topology features..."
+	python -m etl.data16122024_to_lfa \
+		--buildings data_16122024/buildings.csv \
+		--weather data_16122024/weather.csv \
+		--config configs/etl_data16122024.yml \
+		--nodes data_16122024/network_nodes.csv \
+		--edges data_16122024/network_edges.csv \
+		--links data_16122024/building_links.csv \
+		--write-meters false
+
+etl-sample:
+	@echo "🧪 Testing ETL pipeline with sample data..."
+	python test_etl_pipeline.py
+
+etl-test-data16122024:
+	@echo "🧪 Testing data16122024 ETL pipeline..."
+	python test_data16122024_etl.py
+
+# Centralized Heating Agent (pandapipes)
+cha: processed/lfa/.ready
+	@echo "🔥 Running Centralized Heating Agent (CHA)..."
+	@echo "   - Uses physics-based heat demand from thesis data integration"
+	@echo "   - Street-following dual-pipe network construction"
+	@echo "   - Output: processed/cha/*.csv, processed/cha/cha.gpkg, processed/cha/network_map.html"
+	@echo "   - Interactive map with 6 layers (streets, supply, return, service, buildings, plant)"
+	python -m src.cha configs/cha.yml
+	@echo "✅ CHA complete!"
+
+# Interactive Centralized Heating Agent (with street selection)
+cha-interactive:
+	@echo "🏗️ Running Interactive Centralized Heating Agent (CHA)..."
+	@echo "   - Interactive street selection (individual, multiple, entire region)"
+	@echo "   - Street-specific dual-pipe network analysis"
+	@echo "   - Comprehensive dashboards for each analysis"
+	@echo "   - Advanced layer control in interactive maps"
+	python -m src.cha_interactive configs/cha_interactive.yml
+	@echo "✅ Interactive CHA complete!"
+
+# Decentralized Heating Agent (pandapower)
+dha: processed/lfa/.ready
+	@echo "⚡ Running Decentralized Heating Agent (pandapower)..."
+	@echo "   - Uses physics-based heat demand + electrical profiles for heat pumps"
+	@echo "   - Grid analysis with feeder utilization checks"
+	@echo "   - Output: processed/dha/feeder_loads.csv"
+	@echo "   - Violations: eval/dha/violations.csv"
+	python -m src.dha configs/dha.yml
+	@echo "✅ DHA complete!"
+
+# Interactive Decentralized Heating Agent (with maps and Pandapower)
+dha-interactive:
+	@echo "⚡ Running Interactive Decentralized Heating Agent..."
+	@echo "   - Interactive street selection and analysis"
+	@echo "   - Comprehensive Pandapower integration"
+	@echo "   - Interactive maps with layer control"
+	@echo "   - Street-following service connections"
+	@echo "   - Real-time power flow analysis"
+	python -m src.dha_interactive
+	@echo "✅ Interactive DHA complete!"
+
+# Enhanced Multi-Agent System (Simplified)
+enhanced-agents:
+	@echo "🤖 Running Enhanced Multi-Agent System..."
+	@echo "   - Multi-agent delegation system"
+	@echo "   - Comprehensive analysis capabilities"
+	@echo "   - Interactive user interface"
+	@echo "   - Real-time agent coordination"
+	python -m src.simplified_agent_system interactive
+	@echo "✅ Enhanced Multi-Agent System complete!"
+
+# Test Enhanced Multi-Agent System
+test-enhanced-agents:
+	@echo "🧪 Testing Enhanced Multi-Agent System..."
+	@echo "   - End-to-end pipeline test"
+	@echo "   - Agent delegation verification"
+	@echo "   - Tool execution validation"
+	python -m src.simplified_agent_system test
+	@echo "✅ Enhanced Multi-Agent System test complete!"
+
+# Techno-Economic & Emissions (EAA + TCA)
+te:
+	@echo "💰 Running Techno-Economic & Emissions analysis..."
+	@echo "   - EAA: Join point for CHA and DHA results"
+	@echo "   - Monte Carlo LCoH and CO₂ analysis"
+	@echo "   - TCA: KPI generation and decision support"
+	@echo "   - Output: eval/te/mc.parquet, eval/te/summary.csv, processed/kpi/kpi_summary.json"
+	python -m src.te configs/eaa.yml configs/tca.yml
+	@echo "✅ TE complete!"
+
+# KPI Generation (TCA)
+kpi:
+	@echo "📊 Running Techno-Economic Analysis Agent (TCA)..."
+	@echo "   - KPI generation from EAA results"
+	@echo "   - Decision support and recommendations"
+	@echo "   - Output: processed/kpi/kpi_summary.json"
+	python -m src.tca configs/tca.yml
+	@echo "✅ KPI complete!"
+
+# Pipe Catalog Agent
+pca:
+	@echo "🧵 Building canonical pipe catalog..."
+	python -m agents.pca --config configs/pca.yml
+	@echo "✅ Wrote processed/pca/catalog.csv and eval/pca/catalog_qc.csv"
+
+# Comprehensive Analysis Agent
+caa:
+	@echo "🧰 Running Comprehensive Analysis Agent (CAA)…"
+	python -m src.caa configs/caa.yml
+	@echo "   - Bundle: eval/caa/diagnostics.zip"
+	@echo "✅ CAA complete!"
+
+# Comprehensive Analysis Agent
+caa:
+	@echo "🧰 Running Comprehensive Analysis Agent (CAA)…"
+	python -m src.caa configs/caa.yml
+	@echo "   - Bundle: eval/caa/diagnostics.zip"
+	@echo "✅ CAA complete!"
+
+# Generate sample data for testing
+sample-data:
+	@echo "📁 Generating sample data for testing..."
+	python scripts/generate_sample_data.py
+	@echo "✅ Created sample buildings, weather, and meter data"
+
+# Clean generated artifacts
+clean:
+	@echo "🧹 Cleaning generated artifacts..."
+	rm -rf processed/
+	rm -rf eval/
+	rm -rf docs/branitz_recommendation.html
+	rm -rf docs/branitz_recommendation.pdf
+	@echo "✅ Clean complete!"
+
+# Install dependencies (optional)
+install:
+	@echo "📦 Installing dependencies..."
+	pip install -r requirements.txt
+	@echo "✅ Installation complete!"
+
+# Development setup
+dev-setup:
+	@echo "🔧 Setting up development environment..."
+	@echo "1. Installing dependencies..."
+	$(MAKE) install
+	@echo "2. Creating necessary directories..."
+	mkdir -p processed/{lfa,cha,dha,kpi}
+	mkdir -p eval/{lfa,cha,dha,te}
+	mkdir -p docs
+	mkdir -p schemas
+	@echo "3. Running verification..."
+	$(MAKE) verify
+	@echo "✅ Development setup complete!"
+
+# Schema validation helper
+validate-schemas:
+	@echo "🔍 Validating JSON schemas..."
+	@echo "   - LFA demand schema: schemas/lfa_demand.schema.json"
+	@echo "   - KPI summary schema: schemas/kpi_summary.schema.json"
+	@echo "✅ Schema validation complete!"
+
+# Quick test run
+test-run:
+	@echo "🧪 Running quick test with synthetic data..."
+	@echo "   - This will run a minimal end-to-end test"
+	@echo "   - Using small synthetic datasets"
+	@echo "   - Results in test_outputs/"
+	@echo "✅ Test run complete!"
+
+# EnergyGPT KPI Analysis
+egpt:
+	@echo "🤖 Running EnergyGPT KPI Analysis..."
+	@echo "Usage: make egpt PROMPT=\"analyze_kpi_report(kpi_report_path='processed/kpi/<SLUG>/kpi_summary.json')\""
+	@test -n "$(PROMPT)" || (echo "❌ Set PROMPT=..."; exit 1)
+	PYTHONPATH=. python src/enhanced_agent_runner.py egpt "$(PROMPT)"
+	@echo "✅ EnergyGPT analysis complete!"
+
+# Results Extraction
+results:
+	@echo "📊 Extracting results table..."
+	@echo "Usage: make results SLUG=<street_slug>"
+	@test -n "$(SLUG)" || (echo "❌ Set SLUG=..."; exit 1)
+	python scripts/extract_results.py --slug $(SLUG) --root . --outdir docs/
+	@echo "✅ Results extraction complete!"
+
+# System Dashboard
+dashboard:
+	@echo "🎨 Generating comprehensive system dashboard..."
+	python src/dashboard_generator.py --root . --output docs/system_dashboard.html
+	@echo "✅ Dashboard generated successfully!"
+	@echo "🌐 Open in browser: file://$(PWD)/docs/system_dashboard.html"
+
+# Results Dashboard
+results-dashboard:
+	@echo "📊 Generating focused results dashboard..."
+	@echo "Usage: make results-dashboard SLUG=<street_slug>"
+	@test -n "$(SLUG)" || (echo "❌ Set SLUG=... (use empty string for system overview)"; exit 1)
+	python src/results_dashboard.py --slug $(SLUG) --root . --output docs/results_dashboard_$(SLUG).html
+	@echo "✅ Results dashboard generated successfully!"
+	@echo "🌐 Open in browser: file://$(PWD)/docs/results_dashboard_$(SLUG).html"
+
+# Combined Dashboard
+combined-dashboard:
+	@echo "🎨 Generating combined dashboard with tabs..."
+	python src/combined_dashboard.py --root . --output docs/combined_dashboard.html
+	@echo "✅ Combined dashboard generated successfully!"
+	@echo "🌐 Open in browser: file://$(PWD)/docs/combined_dashboard.html"
+
+# Figures Generation
+figures:
+	@echo "📊 Generating comprehensive figures..."
+	@echo "Usage: make figures SLUG=<street_slug>"
+	@test -n "$(SLUG)" || (echo "❌ Set SLUG=... (use empty string for system overview)"; exit 1)
+	python scripts/make_figures.py --slug $(SLUG) --root . --outdir docs/
+	@echo "✅ Figures generated successfully!"
+	@echo "📁 Check docs/ for generated figures"
+
+# Comprehensive Dashboard
+comprehensive-dashboard:
+	@echo "🎨 Generating comprehensive dashboard with embedded figures..."
+	python src/comprehensive_dashboard.py --root . --output docs/comprehensive_dashboard.html
+	@echo "✅ Comprehensive dashboard generated successfully!"
+	@echo "🌐 Open in browser: file://$(PWD)/docs/comprehensive_dashboard.html"
+
+# Street-Specific Dashboard
+street-dashboard:
+	@echo "🏘️ Generating street-specific dashboard..."
+	@echo "Usage: make street-dashboard STREET='<street_name>' BUILDINGS=<number>"
+	@test -n "$(STREET)" || (echo "❌ Set STREET='...' (e.g., STREET='An der Bahn')"; exit 1)
+	@test -n "$(BUILDINGS)" || (echo "❌ Set BUILDINGS=... (e.g., BUILDINGS=14)"; exit 1)
+	python src/street_dashboard.py --street "$(STREET)" --buildings $(BUILDINGS) --root .
+	@echo "✅ Street dashboard generated successfully!"
+	@echo "🌐 Open in browser: file://$(PWD)/docs/street_dashboard_$(shell echo $(STREET) | tr '[:upper:]' '[:lower:]' | sed 's/ /_/g' | sed 's/ä/ae/g' | sed 's/ö/oe/g' | sed 's/ü/ue/g').html" 

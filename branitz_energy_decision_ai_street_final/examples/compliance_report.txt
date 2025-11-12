@@ -1,0 +1,27 @@
+================================================================================
+CHA SIMULATION COMPLIANCE REPORT
+================================================================================
+Generated: 2025-09-24 16:21:43
+Output Directory: examples/test_cha_outputs
+
+EXECUTIVE SUMMARY
+----------------------------------------
+Total Files Validated: 1
+Valid Files: 0
+Invalid Files: 0
+Error Files: 1
+Success Rate: 0.0%
+Total Violations: 10
+
+FILE-BY-FILE RESULTS
+----------------------------------------
+realistic_cha_output.json:
+  Status: ERROR
+  Violations: 0
+
+RECOMMENDATIONS
+----------------------------------------
+• Review and resolve standards violations
+• Improve overall validation success rate
+
+================================================================================

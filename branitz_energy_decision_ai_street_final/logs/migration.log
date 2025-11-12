@@ -1,0 +1,71 @@
+2025-09-24 21:59:57,350 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/test_backup.json
+2025-09-24 21:59:57,350 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/test_backup.json
+2025-09-24 21:59:57,350 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/test_backup.json
+2025-09-24 21:59:57,350 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/test_backup.json
+2025-09-24 21:59:57,350 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/test_backup.json
+2025-09-24 21:59:57,350 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/test_backup.json
+2025-09-24 21:59:57,350 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/test_backup.json
+2025-09-24 21:59:57,350 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/test_backup.json
+2025-09-24 21:59:57,350 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/test_backup.json
+2025-09-24 21:59:57,350 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/test_backup.json
+2025-09-24 21:59:57,350 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/test_backup.json
+2025-09-24 21:59:57,350 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/test_backup.json
+2025-09-24 21:59:57,350 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/test_backup.json
+2025-09-24 21:59:57,355 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/legacy_input.json
+2025-09-24 21:59:57,355 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/legacy_input.json
+2025-09-24 21:59:57,355 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/legacy_input.json
+2025-09-24 21:59:57,355 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/legacy_input.json
+2025-09-24 21:59:57,355 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/legacy_input.json
+2025-09-24 21:59:57,355 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/legacy_input.json
+2025-09-24 21:59:57,355 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/legacy_input.json
+2025-09-24 21:59:57,355 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/legacy_input.json
+2025-09-24 21:59:57,355 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/legacy_input.json
+2025-09-24 21:59:57,355 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/legacy_input.json
+2025-09-24 21:59:57,355 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/legacy_input.json
+2025-09-24 21:59:57,355 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/legacy_input.json
+2025-09-24 21:59:57,355 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/legacy_input.json
+2025-09-24 21:59:57,355 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/legacy_input.json
+2025-09-24 21:59:57,356 - cha_migration - INFO - Successfully migrated: /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/legacy_input.json -> /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/migrated_output.json
+2025-09-24 21:59:57,356 - cha_migration - INFO - Successfully migrated: /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/legacy_input.json -> /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/migrated_output.json
+2025-09-24 21:59:57,356 - cha_migration - INFO - Successfully migrated: /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/legacy_input.json -> /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/migrated_output.json
+2025-09-24 21:59:57,356 - cha_migration - INFO - Successfully migrated: /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/legacy_input.json -> /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/migrated_output.json
+2025-09-24 21:59:57,356 - cha_migration - INFO - Successfully migrated: /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/legacy_input.json -> /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/migrated_output.json
+2025-09-24 21:59:57,356 - cha_migration - INFO - Successfully migrated: /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/legacy_input.json -> /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/migrated_output.json
+2025-09-24 21:59:57,356 - cha_migration - INFO - Successfully migrated: /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/legacy_input.json -> /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/migrated_output.json
+2025-09-24 21:59:57,356 - cha_migration - INFO - Successfully migrated: /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/legacy_input.json -> /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/migrated_output.json
+2025-09-24 21:59:57,356 - cha_migration - INFO - Successfully migrated: /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/legacy_input.json -> /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/migrated_output.json
+2025-09-24 21:59:57,356 - cha_migration - INFO - Successfully migrated: /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/legacy_input.json -> /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/migrated_output.json
+2025-09-24 21:59:57,356 - cha_migration - INFO - Successfully migrated: /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/legacy_input.json -> /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/migrated_output.json
+2025-09-24 21:59:57,356 - cha_migration - INFO - Successfully migrated: /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/legacy_input.json -> /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/migrated_output.json
+2025-09-24 21:59:57,356 - cha_migration - INFO - Successfully migrated: /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/legacy_input.json -> /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/migrated_output.json
+2025-09-24 21:59:57,356 - cha_migration - INFO - Successfully migrated: /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/legacy_input.json -> /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/migrated_output.json
+2025-09-24 21:59:57,361 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/invalid_input.json
+2025-09-24 21:59:57,361 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/invalid_input.json
+2025-09-24 21:59:57,361 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/invalid_input.json
+2025-09-24 21:59:57,361 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/invalid_input.json
+2025-09-24 21:59:57,361 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/invalid_input.json
+2025-09-24 21:59:57,361 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/invalid_input.json
+2025-09-24 21:59:57,361 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/invalid_input.json
+2025-09-24 21:59:57,361 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/invalid_input.json
+2025-09-24 21:59:57,361 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/invalid_input.json
+2025-09-24 21:59:57,361 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/invalid_input.json
+2025-09-24 21:59:57,361 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/invalid_input.json
+2025-09-24 21:59:57,361 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/invalid_input.json
+2025-09-24 21:59:57,361 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/invalid_input.json
+2025-09-24 21:59:57,361 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/invalid_input.json
+2025-09-24 21:59:57,361 - cha_migration - INFO - Backup created: backups/migration_20250924_215957/invalid_input.json
+2025-09-24 21:59:57,362 - cha_migration - ERROR - Failed to migrate /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/invalid_input.json: Validation failed: ['Missing required field: pipes']
+2025-09-24 21:59:57,362 - cha_migration - ERROR - Failed to migrate /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/invalid_input.json: Validation failed: ['Missing required field: pipes']
+2025-09-24 21:59:57,362 - cha_migration - ERROR - Failed to migrate /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/invalid_input.json: Validation failed: ['Missing required field: pipes']
+2025-09-24 21:59:57,362 - cha_migration - ERROR - Failed to migrate /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/invalid_input.json: Validation failed: ['Missing required field: pipes']
+2025-09-24 21:59:57,362 - cha_migration - ERROR - Failed to migrate /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/invalid_input.json: Validation failed: ['Missing required field: pipes']
+2025-09-24 21:59:57,362 - cha_migration - ERROR - Failed to migrate /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/invalid_input.json: Validation failed: ['Missing required field: pipes']
+2025-09-24 21:59:57,362 - cha_migration - ERROR - Failed to migrate /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/invalid_input.json: Validation failed: ['Missing required field: pipes']
+2025-09-24 21:59:57,362 - cha_migration - ERROR - Failed to migrate /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/invalid_input.json: Validation failed: ['Missing required field: pipes']
+2025-09-24 21:59:57,362 - cha_migration - ERROR - Failed to migrate /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/invalid_input.json: Validation failed: ['Missing required field: pipes']
+2025-09-24 21:59:57,362 - cha_migration - ERROR - Failed to migrate /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/invalid_input.json: Validation failed: ['Missing required field: pipes']
+2025-09-24 21:59:57,362 - cha_migration - ERROR - Failed to migrate /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/invalid_input.json: Validation failed: ['Missing required field: pipes']
+2025-09-24 21:59:57,362 - cha_migration - ERROR - Failed to migrate /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/invalid_input.json: Validation failed: ['Missing required field: pipes']
+2025-09-24 21:59:57,362 - cha_migration - ERROR - Failed to migrate /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/invalid_input.json: Validation failed: ['Missing required field: pipes']
+2025-09-24 21:59:57,362 - cha_migration - ERROR - Failed to migrate /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/invalid_input.json: Validation failed: ['Missing required field: pipes']
+2025-09-24 21:59:57,362 - cha_migration - ERROR - Failed to migrate /var/folders/ly/zm9d8tjn51qfbf_3kw6xg26c0000gn/T/tmpllna8wcs/test_data/invalid_input.json: Validation failed: ['Missing required field: pipes']
