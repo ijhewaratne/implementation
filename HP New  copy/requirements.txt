@@ -1,0 +1,15 @@
+# District Heating Network Simulation Dependencies
+# Install with: pip install -r requirements.txt
+# Or with conda: conda install --file requirements.txt
+
+pandapipes          # District heating network simulation
+folium              # Interactive mapping
+branca              # Color mapping for folium
+shapely             # Geometric operations
+pandas              # Data manipulation
+pyproj              # Coordinate transformations
+numpy               # Numerical computing
+matplotlib          # Plotting
+geopandas           # Geospatial data processing
+networkx            # Graph algorithms for network analysis
+ 
