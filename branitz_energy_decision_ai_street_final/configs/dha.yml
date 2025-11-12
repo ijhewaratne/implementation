@@ -1,0 +1,27 @@
+# COP bins by outdoor temperature (inclusive ranges)
+cop_bins:
+  - { t_min: -50, t_max: -10, cop: 2.0 }
+  - { t_min: -10, t_max: 0,  cop: 2.5 }
+  - { t_min: 0,   t_max: 10, cop: 3.0 }
+  - { t_min: 10,  t_max: 50, cop: 3.5 }
+
+# If no weather provided, fallback constant COP
+cop_default: 3.0
+
+# Thresholds & limits
+utilization_threshold: 0.8         # 80%
+v_min_pu: 0.90
+v_max_pu: 1.10
+
+# Inputs
+lfa_glob: processed/lfa/*.json
+feeder_topology: data/processed/feeder_topology.parquet   # columns: building_id, feeder_id, feeder_rating_kw
+weather_parquet: data/processed/weather.parquet           # optional; columns: hour, T_out_c
+
+# Outputs
+out_dir: processed/dha
+eval_dir: eval/dha
+
+# Backend selection
+pandapower_enabled: true
+top_n_hours: 10

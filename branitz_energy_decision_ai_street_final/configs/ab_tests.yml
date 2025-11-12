@@ -1,0 +1,259 @@
+# CHA A/B Testing Configuration
+# Configuration for comparative testing of different approaches
+
+ab_tests:
+  pipe_sizing_comparison:
+    name: "Pipe Sizing Method Comparison"
+    description: "Compare traditional vs. intelligent pipe sizing methods"
+    test_type: "pipe_sizing"
+    status: "running"
+    start_date: "2024-01-15T00:00:00"
+    end_date: "2024-02-15T00:00:00"
+    
+    variants:
+      - name: "traditional"
+        description: "Traditional fixed diameter sizing"
+        traffic_percentage: 50.0
+        configuration:
+          pipe_sizing_method: "fixed_diameter"
+          default_diameter_mm: 100
+          enable_intelligent_sizing: false
+          sizing_algorithm: "simple"
+        metadata:
+          risk_level: "low"
+          expected_performance: "baseline"
+          
+      - name: "intelligent"
+        description: "Intelligent pipe sizing with flow-based calculation"
+        traffic_percentage: 50.0
+        configuration:
+          pipe_sizing_method: "intelligent"
+          enable_intelligent_sizing: true
+          max_velocity_ms: 2.0
+          min_velocity_ms: 0.1
+          sizing_algorithm: "flow_based"
+        metadata:
+          risk_level: "medium"
+          expected_performance: "improved"
+    
+    metrics:
+      - name: "pipe_cost_efficiency"
+        description: "Cost efficiency of pipe sizing"
+        metric_type: "primary"
+        aggregation: "mean"
+        target_direction: "increase"
+        minimum_detectable_effect: 0.05
+        significance_level: 0.05
+        power: 0.8
+        
+      - name: "hydraulic_performance"
+        description: "Hydraulic performance metrics"
+        metric_type: "primary"
+        aggregation: "mean"
+        target_direction: "increase"
+        minimum_detectable_effect: 0.03
+        significance_level: 0.05
+        power: 0.8
+        
+      - name: "sizing_accuracy"
+        description: "Accuracy of pipe sizing"
+        metric_type: "secondary"
+        aggregation: "mean"
+        target_direction: "increase"
+        minimum_detectable_effect: 0.02
+        significance_level: 0.05
+        power: 0.8
+        
+      - name: "processing_time_ms"
+        description: "Time to complete sizing calculations"
+        metric_type: "guardrail"
+        aggregation: "mean"
+        target_direction: "decrease"
+        minimum_detectable_effect: 0.1
+        significance_level: 0.05
+        power: 0.8
+        
+      - name: "memory_usage_mb"
+        description: "Memory usage during sizing"
+        metric_type: "guardrail"
+        aggregation: "mean"
+        target_direction: "decrease"
+        minimum_detectable_effect: 0.1
+        significance_level: 0.05
+        power: 0.8
+    
+    target_sample_size: 1000
+    minimum_duration_days: 7
+    maximum_duration_days: 30
+    success_criteria:
+      primary_metrics_improvement: 0.05
+      guardrail_metrics_degradation: 0.1
+      statistical_significance: 0.95
+    metadata:
+      test_owner: "engineering_team"
+      business_impact: "high"
+      technical_risk: "medium"
+      
+  flow_calculation_comparison:
+    name: "Flow Calculation Method Comparison"
+    description: "Compare basic vs. enhanced flow calculation methods"
+    test_type: "flow_calculation"
+    status: "running"
+    start_date: "2024-01-20T00:00:00"
+    end_date: "2024-02-10T00:00:00"
+    
+    variants:
+      - name: "basic"
+        description: "Basic flow calculation without safety factors"
+        traffic_percentage: 50.0
+        configuration:
+          flow_calculation_method: "basic"
+          safety_factor: 1.0
+          diversity_factor: 1.0
+          calculation_algorithm: "simple"
+        metadata:
+          risk_level: "low"
+          expected_performance: "baseline"
+          
+      - name: "enhanced"
+        description: "Enhanced flow calculation with safety and diversity factors"
+        traffic_percentage: 50.0
+        configuration:
+          flow_calculation_method: "enhanced"
+          safety_factor: 1.1
+          diversity_factor: 0.8
+          calculation_algorithm: "advanced"
+        metadata:
+          risk_level: "medium"
+          expected_performance: "improved"
+    
+    metrics:
+      - name: "flow_accuracy"
+        description: "Accuracy of flow calculations"
+        metric_type: "primary"
+        aggregation: "mean"
+        target_direction: "increase"
+        minimum_detectable_effect: 0.03
+        significance_level: 0.05
+        power: 0.8
+        
+      - name: "system_reliability"
+        description: "System reliability metrics"
+        metric_type: "primary"
+        aggregation: "mean"
+        target_direction: "increase"
+        minimum_detectable_effect: 0.02
+        significance_level: 0.05
+        power: 0.8
+        
+      - name: "calculation_time_ms"
+        description: "Time to complete flow calculations"
+        metric_type: "guardrail"
+        aggregation: "mean"
+        target_direction: "decrease"
+        minimum_detectable_effect: 0.1
+        significance_level: 0.05
+        power: 0.8
+        
+      - name: "error_rate_percent"
+        description: "Error rate in flow calculations"
+        metric_type: "guardrail"
+        aggregation: "mean"
+        target_direction: "decrease"
+        minimum_detectable_effect: 0.01
+        significance_level: 0.05
+        power: 0.8
+    
+    target_sample_size: 800
+    minimum_duration_days: 7
+    maximum_duration_days: 21
+    success_criteria:
+      primary_metrics_improvement: 0.03
+      guardrail_metrics_degradation: 0.05
+      statistical_significance: 0.95
+    metadata:
+      test_owner: "engineering_team"
+      business_impact: "medium"
+      technical_risk: "low"
+      
+  network_analysis_comparison:
+    name: "Network Analysis Method Comparison"
+    description: "Compare basic vs. advanced network analysis methods"
+    test_type: "network_analysis"
+    status: "draft"
+    start_date: "2024-02-01T00:00:00"
+    end_date: "2024-02-28T00:00:00"
+    
+    variants:
+      - name: "basic"
+        description: "Basic network analysis without hierarchy"
+        traffic_percentage: 50.0
+        configuration:
+          network_analysis_method: "basic"
+          enable_hierarchy_analysis: false
+          enable_critical_path_analysis: false
+          analysis_depth: "shallow"
+        metadata:
+          risk_level: "low"
+          expected_performance: "baseline"
+          
+      - name: "advanced"
+        description: "Advanced network analysis with hierarchy and critical path"
+        traffic_percentage: 50.0
+        configuration:
+          network_analysis_method: "advanced"
+          enable_hierarchy_analysis: true
+          enable_critical_path_analysis: true
+          analysis_depth: "deep"
+        metadata:
+          risk_level: "medium"
+          expected_performance: "improved"
+    
+    metrics:
+      - name: "analysis_accuracy"
+        description: "Accuracy of network analysis"
+        metric_type: "primary"
+        aggregation: "mean"
+        target_direction: "increase"
+        minimum_detectable_effect: 0.04
+        significance_level: 0.05
+        power: 0.8
+        
+      - name: "insight_quality"
+        description: "Quality of network insights"
+        metric_type: "primary"
+        aggregation: "mean"
+        target_direction: "increase"
+        minimum_detectable_effect: 0.03
+        significance_level: 0.05
+        power: 0.8
+        
+      - name: "analysis_time_ms"
+        description: "Time to complete network analysis"
+        metric_type: "guardrail"
+        aggregation: "mean"
+        target_direction: "decrease"
+        minimum_detectable_effect: 0.2
+        significance_level: 0.05
+        power: 0.8
+        
+      - name: "memory_usage_mb"
+        description: "Memory usage during analysis"
+        metric_type: "guardrail"
+        aggregation: "mean"
+        target_direction: "decrease"
+        minimum_detectable_effect: 0.15
+        significance_level: 0.05
+        power: 0.8
+    
+    target_sample_size: 600
+    minimum_duration_days: 7
+    maximum_duration_days: 28
+    success_criteria:
+      primary_metrics_improvement: 0.04
+      guardrail_metrics_degradation: 0.2
+      statistical_significance: 0.95
+    metadata:
+      test_owner: "engineering_team"
+      business_impact: "medium"
+      technical_risk: "medium"

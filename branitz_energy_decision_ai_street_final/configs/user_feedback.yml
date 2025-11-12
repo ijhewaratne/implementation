@@ -1,0 +1,408 @@
+# CHA User Feedback Configuration
+# Configuration for user feedback collection and analysis
+
+feedback_categories:
+  pipe_sizing:
+    - "accuracy"
+    - "performance"
+    - "usability"
+    - "reliability"
+    - "documentation"
+    
+  flow_calculation:
+    - "accuracy"
+    - "performance"
+    - "usability"
+    - "reliability"
+    - "documentation"
+    
+  network_analysis:
+    - "accuracy"
+    - "performance"
+    - "usability"
+    - "reliability"
+    - "documentation"
+    
+  cost_analysis:
+    - "accuracy"
+    - "performance"
+    - "usability"
+    - "reliability"
+    - "documentation"
+    
+  user_interface:
+    - "usability"
+    - "design"
+    - "navigation"
+    - "accessibility"
+    - "responsiveness"
+    
+  documentation:
+    - "clarity"
+    - "completeness"
+    - "accuracy"
+    - "examples"
+    - "tutorials"
+    
+  performance:
+    - "speed"
+    - "memory"
+    - "stability"
+    - "scalability"
+    - "efficiency"
+    
+  integration:
+    - "compatibility"
+    - "ease_of_use"
+    - "reliability"
+    - "data_import"
+    - "data_export"
+    
+  support:
+    - "response_time"
+    - "helpfulness"
+    - "knowledge"
+    - "availability"
+    - "communication"
+    
+  features:
+    - "functionality"
+    - "completeness"
+    - "innovation"
+    - "usefulness"
+    - "relevance"
+
+sentiment_keywords:
+  positive:
+    - "good"
+    - "great"
+    - "excellent"
+    - "amazing"
+    - "fantastic"
+    - "love"
+    - "perfect"
+    - "awesome"
+    - "brilliant"
+    - "outstanding"
+    - "impressive"
+    - "wonderful"
+    - "superb"
+    - "exceptional"
+    - "remarkable"
+    - "incredible"
+    - "marvelous"
+    - "splendid"
+    - "magnificent"
+    - "terrific"
+    
+  negative:
+    - "bad"
+    - "terrible"
+    - "awful"
+    - "horrible"
+    - "hate"
+    - "disappointing"
+    - "frustrating"
+    - "annoying"
+    - "broken"
+    - "useless"
+    - "poor"
+    - "worst"
+    - "pathetic"
+    - "disgusting"
+    - "appalling"
+    - "atrocious"
+    - "dreadful"
+    - "miserable"
+    - "unacceptable"
+    - "inadequate"
+    
+  neutral:
+    - "okay"
+    - "fine"
+    - "average"
+    - "normal"
+    - "standard"
+    - "acceptable"
+    - "decent"
+    - "reasonable"
+    - "adequate"
+    - "satisfactory"
+    - "mediocre"
+    - "ordinary"
+    - "typical"
+    - "common"
+    - "regular"
+    - "usual"
+    - "conventional"
+    - "standard"
+    - "moderate"
+    - "fair"
+
+priority_keywords:
+  critical:
+    - "critical"
+    - "urgent"
+    - "emergency"
+    - "broken"
+    - "crash"
+    - "error"
+    - "fail"
+    - "not working"
+    - "down"
+    - "unavailable"
+    - "corrupted"
+    - "lost data"
+    - "security"
+    - "vulnerability"
+    - "exploit"
+    
+  high:
+    - "important"
+    - "major"
+    - "significant"
+    - "serious"
+    - "problem"
+    - "issue"
+    - "bug"
+    - "slow"
+    - "performance"
+    - "memory"
+    - "cpu"
+    - "timeout"
+    - "freeze"
+    - "hang"
+    - "unresponsive"
+    
+  medium:
+    - "moderate"
+    - "minor"
+    - "small"
+    - "suggestion"
+    - "improvement"
+    - "enhancement"
+    - "feature"
+    - "request"
+    - "wish"
+    - "nice to have"
+    - "convenience"
+    - "usability"
+    - "interface"
+    - "design"
+    
+  low:
+    - "nice to have"
+    - "optional"
+    - "future"
+    - "wish"
+    - "request"
+    - "feature"
+    - "enhancement"
+    - "improvement"
+    - "optimization"
+    - "polish"
+    - "refinement"
+    - "cosmetic"
+    - "minor"
+    - "trivial"
+
+feedback_templates:
+  bug_report:
+    title: "Bug Report: {component}"
+    description: |
+      **Component**: {component}
+      **Severity**: {severity}
+      **Steps to Reproduce**:
+      1. 
+      2. 
+      3. 
+      
+      **Expected Behavior**: 
+      
+      **Actual Behavior**: 
+      
+      **Environment**:
+      - OS: 
+      - Browser: 
+      - Version: 
+      
+      **Additional Information**:
+      
+  feature_request:
+    title: "Feature Request: {feature}"
+    description: |
+      **Feature**: {feature}
+      **Priority**: {priority}
+      **Description**: 
+      
+      **Use Case**: 
+      
+      **Benefits**: 
+      
+      **Additional Information**:
+      
+  performance_issue:
+    title: "Performance Issue: {component}"
+    description: |
+      **Component**: {component}
+      **Issue Type**: {issue_type}
+      **Description**: 
+      
+      **Performance Impact**: 
+      
+      **Steps to Reproduce**:
+      1. 
+      2. 
+      3. 
+      
+      **Expected Performance**: 
+      
+      **Actual Performance**: 
+      
+      **Environment**:
+      - OS: 
+      - Hardware: 
+      - Network: 
+      
+  usability_issue:
+    title: "Usability Issue: {component}"
+    description: |
+      **Component**: {component}
+      **Issue Type**: {issue_type}
+      **Description**: 
+      
+      **User Impact**: 
+      
+      **Steps to Reproduce**:
+      1. 
+      2. 
+      3. 
+      
+      **Current Behavior**: 
+      
+      **Suggested Improvement**: 
+      
+      **User Type**: 
+      
+  general_feedback:
+    title: "General Feedback: {topic}"
+    description: |
+      **Topic**: {topic}
+      **Feedback Type**: {feedback_type}
+      **Description**: 
+      
+      **Rating**: {rating}/5
+      
+      **Additional Comments**: 
+      
+  satisfaction_survey:
+    title: "Satisfaction Survey Response"
+    description: |
+      **Overall Satisfaction**: {rating}/5
+      
+      **What do you like most?**: 
+      
+      **What could be improved?**: 
+      
+      **Would you recommend this system?**: {recommendation}
+      
+      **Additional Comments**: 
+
+feedback_channels:
+  in_app:
+    enabled: true
+    location: "help_menu"
+    trigger: "user_initiated"
+    
+  email:
+    enabled: true
+    address: "feedback@cha-system.com"
+    auto_response: true
+    
+  web_form:
+    enabled: true
+    url: "https://cha-system.com/feedback"
+    integration: "api"
+    
+  support_ticket:
+    enabled: true
+    system: "zendesk"
+    auto_escalation: true
+    
+  user_forum:
+    enabled: true
+    platform: "discourse"
+    moderation: "automated"
+
+feedback_analysis:
+  sentiment_analysis:
+    enabled: true
+    model: "vader"
+    confidence_threshold: 0.7
+    
+  topic_modeling:
+    enabled: true
+    algorithm: "lda"
+    num_topics: 10
+    
+  priority_classification:
+    enabled: true
+    model: "naive_bayes"
+    features: ["sentiment", "keywords", "category"]
+    
+  trend_analysis:
+    enabled: true
+    window_size_days: 30
+    alert_threshold: 0.2
+    
+  response_generation:
+    enabled: true
+    template_based: true
+    personalization: true
+
+feedback_workflow:
+  auto_classification:
+    enabled: true
+    confidence_threshold: 0.8
+    
+  auto_routing:
+    enabled: true
+    rules:
+      - condition: "priority == 'critical'"
+        action: "escalate_to_engineering"
+      - condition: "category == 'bug_report'"
+        action: "route_to_qa"
+      - condition: "category == 'feature_request'"
+        action: "route_to_product"
+        
+  auto_response:
+    enabled: true
+    templates:
+      acknowledgment: "Thank you for your feedback. We have received your submission and will review it shortly."
+      resolution: "Your feedback has been resolved. Please let us know if you have any other concerns."
+      
+  follow_up:
+    enabled: true
+    schedule_days: 7
+    template: "How satisfied are you with our resolution of your feedback?"
+
+feedback_metrics:
+  collection_rate:
+    target: 0.1  # 10% of users
+    measurement: "monthly"
+    
+  response_time:
+    target_hours: 24
+    measurement: "average"
+    
+  resolution_rate:
+    target: 0.8  # 80% resolved
+    measurement: "monthly"
+    
+  satisfaction_score:
+    target: 4.0  # out of 5
+    measurement: "monthly"
+    
+  feedback_volume:
+    target: 100  # per month
+    measurement: "monthly"

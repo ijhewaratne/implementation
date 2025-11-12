@@ -1,0 +1,40 @@
+defaults:
+  T_in_C: 20.0
+  air_change_n_per_h: 0.5
+  window_share: 0.15
+  height: 3.0
+  sanierungs_map:
+    unsaniert: 1.00
+    teilsaniert: 0.71
+    vollsaniert: 0.30
+
+buildings_columns:   # map your actual headers here
+  id: building_id      # e.g., "oi" or "b_id"
+  function: function
+  floor_area: floor_area_m2
+  wall_area: wall_area_m2
+  roof_area: roof_area_m2
+  floor_area_ground: floor_on_soil_m2   # optional; used in U_floor*A_floor
+  window_area: window_area_m2           # optional; else derive via window_share*wall_area
+  window_share: fensterflaechenanteil   # optional
+  volume: volume_m3
+  height: height_m
+  U_wall: U_Aussenwand
+  U_roof: U_Dach
+  U_floor: U_Boden
+  U_window: U_Fenster
+  T_in: T_in_C
+  n: air_change_n_per_h
+  sanierungszustand: sanierungszustand  # values in {unsaniert, teilsaniert, vollsaniert}
+
+weather_columns:
+  timestamp: timestamp
+  T_out: T_out
+  RH: RH        # optional
+  GHI: GHI      # optional
+
+# Graph/topology settings (optional)
+graph:
+  nodes: data_16122024/network_nodes.csv
+  edges: data_16122024/network_edges.csv
+  links: data_16122024/building_links.csv

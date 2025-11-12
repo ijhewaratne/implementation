@@ -1,0 +1,277 @@
+# CHA Intelligent Sizing Configuration
+# Configuration for intelligent pipe sizing system
+
+# Flow Calculation Engine Configuration
+flow_calculation:
+  # Temperature settings
+  supply_temperature_c: 70
+  return_temperature_c: 40
+  
+  # Design parameters
+  design_hour_method: "peak_hour"  # "peak_hour" or "top_n_hours"
+  top_n_hours: 10
+  design_full_load_hours: 2000
+  
+  # Safety and diversity factors
+  safety_factor: 1.1
+  diversity_factor: 0.8
+  
+  # Water properties (will be calculated automatically)
+  water_density_kg_m3: 977.8  # At 70°C
+  water_specific_heat_j_per_kgk: 4180
+
+# Pipe Sizing Engine Configuration
+pipe_sizing:
+  # Velocity constraints
+  max_velocity_ms: 2.0
+  min_velocity_ms: 0.1
+  
+  # Pressure drop constraints
+  max_pressure_drop_pa_per_m: 5000  # 0.5 bar/100m
+  min_pressure_drop_pa_per_m: 100   # 0.01 bar/100m
+  
+  # Pipe material properties
+  pipe_roughness_mm: 0.1
+  
+  # Cost factors (EUR per meter)
+  cost_factors:
+    base_cost_per_mm_diameter: 0.5  # EUR per mm of diameter per meter
+    installation_factor: 1.5        # Installation cost multiplier
+    insulation_cost_per_m: 15.0     # Insulation cost per meter
+    material_factor: 1.0           # Material cost factor
+  
+  # Standard pipe diameters (DN series in mm)
+  standard_diameters_mm: [25, 32, 40, 50, 63, 80, 100, 125, 150, 200, 250, 300, 400]
+  
+  # Pipe categories
+  pipe_categories:
+    service_connection:
+      diameter_range_m: [0.025, 0.050]
+      velocity_limit_ms: 1.5
+      pressure_drop_limit_pa_per_m: 5000
+      typical_flow_range_kg_s: [0.1, 2.0]
+      material: "steel_or_plastic"
+      insulation_required: true
+    
+    distribution_pipe:
+      diameter_range_m: [0.063, 0.150]
+      velocity_limit_ms: 2.0
+      pressure_drop_limit_pa_per_m: 4000
+      typical_flow_range_kg_s: [2.0, 20.0]
+      material: "steel"
+      insulation_required: true
+    
+    main_pipe:
+      diameter_range_m: [0.200, 0.400]
+      velocity_limit_ms: 2.0
+      pressure_drop_limit_pa_per_m: 3000
+      typical_flow_range_kg_s: [10.0, 100.0]
+      material: "steel"
+      insulation_required: true
+
+# Network Hierarchy Manager Configuration
+network_hierarchy:
+  # Analysis options
+  network_analysis: true
+  connectivity_check: true
+  critical_path_analysis: true
+  
+  # Hierarchy levels
+  hierarchy_levels:
+    1:
+      name: "Service Connections"
+      min_flow_kg_s: 0
+      max_flow_kg_s: 2
+    
+    2:
+      name: "Street Distribution"
+      min_flow_kg_s: 2
+      max_flow_kg_s: 10
+    
+    3:
+      name: "Area Distribution"
+      min_flow_kg_s: 10
+      max_flow_kg_s: 30
+    
+    4:
+      name: "Main Distribution"
+      min_flow_kg_s: 30
+      max_flow_kg_s: 80
+    
+    5:
+      name: "Primary Main"
+      min_flow_kg_s: 80
+      max_flow_kg_s: 200
+  
+  # Critical path analysis
+  critical_path_thresholds:
+    high_flow_threshold_kg_s: 50.0
+    high_connectivity_threshold: 5
+    criticality_score_threshold: 1000.0
+
+# Standards Compliance Engine Configuration
+standards_compliance:
+  # Enabled standards
+  standards_enabled:
+    - "EN_13941"
+    - "DIN_1988"
+    - "VDI_2067"
+    - "Local_Codes"
+  
+  # Severity thresholds
+  severity_thresholds:
+    critical: 0.5
+    high: 0.3
+    medium: 0.2
+    low: 0.1
+  
+  # Standards-specific parameters
+  EN_13941:
+    max_velocity_ms: 2.0
+    max_pressure_drop_pa_per_m: 5000
+    min_velocity_ms: 0.1
+    temperature_range_c: [40, 90]
+    pressure_range_bar: [2, 16]
+    min_insulation_thickness_mm: 30
+  
+  DIN_1988:
+    main_pipes_velocity_ms: 2.0
+    distribution_velocity_ms: 2.0
+    service_velocity_ms: 1.5
+    main_pipes_pressure_drop_pa_per_m: 3000
+    distribution_pressure_drop_pa_per_m: 4000
+    service_pressure_drop_pa_per_m: 5000
+  
+  VDI_2067:
+    max_payback_period_years: 15
+    min_internal_rate_of_return: 0.06
+    max_lifecycle_cost_eur_per_mwh: 50
+    min_system_efficiency: 0.85
+    max_heat_loss_percentage: 0.15
+    min_pump_efficiency: 0.75
+  
+  Local_Codes:
+    min_safety_factor: 2.0
+    max_working_pressure_bar: 16
+    min_wall_thickness_mm: 3.0
+    max_noise_level_db: 45
+    max_ground_temperature_rise_k: 5
+    min_insulation_efficiency: 0.95
+
+# Output Configuration
+output:
+  # Output directory
+  output_dir: "processed/cha_intelligent_sizing"
+  
+  # Export options
+  export_flow_results: true
+  export_pipe_sizing_results: true
+  export_compliance_results: true
+  export_network_hierarchy: true
+  export_summary: true
+  
+  # File formats
+  file_formats:
+    flow_results: "json"
+    pipe_sizing_results: "json"
+    compliance_results: "json"
+    network_hierarchy: "json"
+    summary: "json"
+  
+  # Reporting options
+  generate_reports: true
+  report_formats: ["html", "pdf"]
+  include_charts: true
+  include_recommendations: true
+
+# Validation Configuration
+validation:
+  # Validation options
+  validate_inputs: true
+  validate_outputs: true
+  check_connectivity: true
+  check_standards_compliance: true
+  
+  # Validation thresholds
+  thresholds:
+    min_flow_rate_kg_s: 0.01
+    max_flow_rate_kg_s: 200.0
+    min_diameter_m: 0.025
+    max_diameter_m: 0.400
+    min_length_m: 1.0
+    max_length_m: 5000.0
+  
+  # Error handling
+  error_handling:
+    stop_on_critical_errors: true
+    log_warnings: true
+    continue_on_warnings: true
+
+# Performance Configuration
+performance:
+  # Optimization options
+  enable_optimization: true
+  optimization_method: "genetic_algorithm"  # "genetic_algorithm", "simulated_annealing", "gradient_descent"
+  
+  # Optimization parameters
+  optimization_parameters:
+    max_iterations: 1000
+    population_size: 50
+    mutation_rate: 0.1
+    crossover_rate: 0.8
+    convergence_threshold: 0.001
+  
+  # Parallel processing
+  parallel_processing: true
+  max_workers: 4
+  
+  # Caching
+  enable_caching: true
+  cache_size_mb: 100
+
+# Logging Configuration
+logging:
+  # Log level
+  log_level: "INFO"  # "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
+  
+  # Log file
+  log_file: "logs/cha_intelligent_sizing.log"
+  
+  # Log format
+  log_format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  
+  # Log rotation
+  log_rotation:
+    max_file_size_mb: 10
+    backup_count: 5
+
+# Advanced Configuration
+advanced:
+  # Numerical methods
+  numerical_methods:
+    friction_factor_method: "colebrook_white"  # "colebrook_white", "swamee_jain", "haaland"
+    pressure_drop_method: "darcy_weisbach"     # "darcy_weisbach", "hazen_williams"
+    flow_calculation_method: "iterative"       # "iterative", "direct"
+  
+  # Convergence criteria
+  convergence:
+    max_iterations: 100
+    tolerance: 1e-6
+    relaxation_factor: 0.8
+  
+  # Advanced features
+  features:
+    enable_sensitivity_analysis: true
+    enable_uncertainty_analysis: true
+    enable_optimization: true
+    enable_what_if_analysis: true
+  
+  # Sensitivity analysis
+  sensitivity_analysis:
+    parameter_ranges:
+      flow_rate_variation: 0.1  # ±10%
+      temperature_variation: 5  # ±5°C
+      pressure_variation: 0.1   # ±0.1 bar
+    
+    analysis_points: 10
+    monte_carlo_samples: 1000

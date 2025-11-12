@@ -1,0 +1,9 @@
+# Gemini API Configuration
+api_key: "AIzaSyAy-ybjltiDoqVNT9oU4toNoHbX0-KM0O4"
+model: "gemini-1.5-flash-latest"
+temperature: 0.7
+max_tokens: 2048
+
+# Fallback settings
+use_fallback: true  # Set to false when ADK is available
+fallback_mode: "rule_based"  # Options: "rule_based", "mock_ai"

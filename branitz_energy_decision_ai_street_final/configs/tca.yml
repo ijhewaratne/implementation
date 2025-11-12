@@ -1,0 +1,41 @@
+scenario_name: "branitz_base"
+# Inputs produced by EAA + CHA/DHA
+paths:
+  eaa_summary: eval/te/summary.csv
+  cha_segments: processed/cha/segments.csv
+  dha_feeders: processed/dha/feeder_loads.csv
+  kpi_out: processed/kpi/kpi_summary.json
+# Decision thresholds (tweak as needed)
+thresholds:
+  feeder_utilization_warn_pct: 80
+  lcoh_hp_advantage_eur_per_mwh: 10
+  # Enhanced hydraulic and thermal thresholds
+  max_velocity_ms: 2.5
+  max_pressure_drop_pa_per_m: 500
+  min_thermal_efficiency: 0.6
+  max_thermal_losses_kw: 100
+  max_specific_pump_power_kw_per_kg_s: 2.0
+  max_lcoh_eur_per_mwh: 500
+
+# Hydraulic performance thresholds
+hydraulic_thresholds:
+  max_velocity_ms: 2.0
+  max_pressure_drop_pa_per_m: 500
+  min_thermal_efficiency: 0.85
+  max_pump_power_kw: 1000
+
+# CHA input validation requirements
+cha_input_requirements:
+  schema_validation: true
+  required_kpis: ["v_max_ms", "dp100m_max_pa", "pump_kw", "thermal_efficiency"]
+# Forecast metrics (fallbacks if not available from LFA metrics)
+forecast_rmse: 0.12
+forecast_picp_90: 0.90
+# Schema path for validation
+kpi_schema: schemas/kpi_summary.schema.json
+kpi_schema_version: "2.0.0"
+
+
+
+
+

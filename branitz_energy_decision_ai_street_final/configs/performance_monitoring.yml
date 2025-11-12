@@ -1,0 +1,192 @@
+# CHA Performance Monitoring Configuration
+# Configuration for real-time performance monitoring and alerting
+
+thresholds:
+  - metric_name: "pipe_sizing_time_ms"
+    warning_threshold: 1000.0
+    error_threshold: 5000.0
+    critical_threshold: 10000.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "Time to complete pipe sizing calculations"
+    
+  - metric_name: "network_creation_time_ms"
+    warning_threshold: 2000.0
+    error_threshold: 10000.0
+    critical_threshold: 30000.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "Time to create network topology"
+    
+  - metric_name: "simulation_time_ms"
+    warning_threshold: 5000.0
+    error_threshold: 30000.0
+    critical_threshold: 60000.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "Time to complete hydraulic simulation"
+    
+  - metric_name: "cost_analysis_time_ms"
+    warning_threshold: 2000.0
+    error_threshold: 10000.0
+    critical_threshold: 20000.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "Time to complete cost analysis"
+    
+  - metric_name: "memory_usage_mb"
+    warning_threshold: 1000.0
+    error_threshold: 2000.0
+    critical_threshold: 4000.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "System memory usage"
+    
+  - metric_name: "cpu_usage_percent"
+    warning_threshold: 80.0
+    error_threshold: 90.0
+    critical_threshold: 95.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "System CPU usage"
+    
+  - metric_name: "disk_usage_percent"
+    warning_threshold: 85.0
+    error_threshold: 90.0
+    critical_threshold: 95.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 10
+    evaluation_interval_seconds: 300
+    description: "Disk usage percentage"
+    
+  - metric_name: "error_rate_percent"
+    warning_threshold: 1.0
+    error_threshold: 5.0
+    critical_threshold: 10.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "System error rate"
+    
+  - metric_name: "request_rate_per_second"
+    warning_threshold: 100.0
+    error_threshold: 200.0
+    critical_threshold: 500.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "Request processing rate"
+    
+  - metric_name: "response_time_ms"
+    warning_threshold: 1000.0
+    error_threshold: 5000.0
+    critical_threshold: 10000.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "Average response time"
+    
+  - metric_name: "concurrent_users"
+    warning_threshold: 50.0
+    error_threshold: 100.0
+    critical_threshold: 200.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "Number of concurrent users"
+    
+  - metric_name: "queue_length"
+    warning_threshold: 10.0
+    error_threshold: 50.0
+    critical_threshold: 100.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "Processing queue length"
+    
+  - metric_name: "cache_hit_rate_percent"
+    warning_threshold: 80.0
+    error_threshold: 70.0
+    critical_threshold: 60.0
+    comparison_operator: "less_than"
+    window_size_minutes: 10
+    evaluation_interval_seconds: 300
+    description: "Cache hit rate percentage"
+    
+  - metric_name: "database_connection_pool_usage_percent"
+    warning_threshold: 80.0
+    error_threshold: 90.0
+    critical_threshold: 95.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "Database connection pool usage"
+    
+  - metric_name: "network_latency_ms"
+    warning_threshold: 100.0
+    error_threshold: 500.0
+    critical_threshold: 1000.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "Network latency"
+    
+  - metric_name: "file_io_time_ms"
+    warning_threshold: 100.0
+    error_threshold: 500.0
+    critical_threshold: 1000.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "File I/O operation time"
+    
+  - metric_name: "garbage_collection_time_ms"
+    warning_threshold: 50.0
+    error_threshold: 200.0
+    critical_threshold: 500.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "Garbage collection time"
+    
+  - metric_name: "thread_pool_usage_percent"
+    warning_threshold: 80.0
+    error_threshold: 90.0
+    critical_threshold: 95.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "Thread pool usage percentage"
+    
+  - metric_name: "memory_leak_rate_mb_per_hour"
+    warning_threshold: 10.0
+    error_threshold: 50.0
+    critical_threshold: 100.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 60
+    evaluation_interval_seconds: 3600
+    description: "Memory leak rate"
+    
+  - metric_name: "api_error_rate_percent"
+    warning_threshold: 1.0
+    error_threshold: 5.0
+    critical_threshold: 10.0
+    comparison_operator: "greater_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "API error rate"
+    
+  - metric_name: "data_processing_throughput_mb_per_second"
+    warning_threshold: 10.0
+    error_threshold: 5.0
+    critical_threshold: 1.0
+    comparison_operator: "less_than"
+    window_size_minutes: 5
+    evaluation_interval_seconds: 60
+    description: "Data processing throughput"

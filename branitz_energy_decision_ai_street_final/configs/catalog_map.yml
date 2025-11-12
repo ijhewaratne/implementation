@@ -1,0 +1,26 @@
+dn:
+  keywords: ["dn", "nominal_diameter", "dn_mm"]
+  unit: null
+d_inner_m:
+  keywords: ["d_inner_m", "inner_diameter_m", "d_i_mm", "di_mm"]
+  unit: "mm"   # will be converted to meters if a mm column is used
+d_outer_m:
+  keywords: ["d_outer_m", "outer_diameter_m", "d_o_mm", "do_mm"]
+  unit: "mm"
+u_wpermk:
+  keywords: ["u_wpermk", "u_value", "u-wert", "u", "u_wert"]
+  unit: "W_per_mK"
+  default: null
+w_loss_w_per_m:
+  keywords: ["w_loss_w_per_m", "heat_loss_W_per_m", "verlust_w_pro_m"]
+  unit: null
+cost_eur_per_m:
+  keywords: ["cost_eur_per_m", "price_per_m", "€/m", "eur_per_m"]
+  unit: "EUR_per_m"
+
+
+
+
+
+
+

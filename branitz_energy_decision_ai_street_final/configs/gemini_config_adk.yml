@@ -1,0 +1,238 @@
+# Enhanced Gemini API Configuration for Google ADK Integration
+# This configuration supports both ADK and fallback modes
+
+# API Configuration
+api_key: "AIzaSyAy-ybjltiDoqVNT9oU4toNoHbX0-KM0O4"
+model: "gemini-1.5-flash-latest"
+temperature: 0.7
+max_tokens: 2048
+
+# ADK-Specific Configuration
+adk:
+  # ADK availability detection
+  enabled: true
+  auto_detect: true  # Automatically detect ADK availability
+  
+  # ADK initialization settings
+  initialization:
+    timeout: 30  # seconds
+    retry_attempts: 3
+    retry_delay: 5  # seconds
+  
+  # ADK agent configuration
+  agents:
+    # Default agent settings
+    default:
+      model: "gemini-1.5-flash-latest"
+      temperature: 0.7
+      max_tokens: 2048
+      timeout: 60  # seconds
+    
+    # Agent-specific overrides
+    energy_planner:
+      temperature: 0.5  # More deterministic for delegation
+      max_tokens: 1024
+    
+    central_heating:
+      temperature: 0.7
+      max_tokens: 2048
+    
+    decentralized_heating:
+      temperature: 0.7
+      max_tokens: 2048
+    
+    comparison:
+      temperature: 0.6  # Balanced for comparison tasks
+      max_tokens: 2048
+    
+    analysis:
+      temperature: 0.7
+      max_tokens: 2048
+    
+    data_explorer:
+      temperature: 0.5  # More deterministic for data tasks
+      max_tokens: 1024
+    
+    energy_gpt:
+      temperature: 0.8  # More creative for insights
+      max_tokens: 2048
+
+# Tool Configuration
+tools:
+  # Tool execution settings
+  execution:
+    timeout: 120  # seconds
+    retry_attempts: 2
+    retry_delay: 3  # seconds
+  
+  # Tool-specific settings
+  comprehensive_analysis:
+    timeout: 300  # 5 minutes for comprehensive analysis
+    retry_attempts: 1
+  
+  data_exploration:
+    timeout: 60  # 1 minute for data exploration
+    retry_attempts: 2
+
+# Error Handling and Retry Logic
+error_handling:
+  # API quota management
+  quota:
+    retry_delay: 60  # seconds
+    max_retries: 3
+    exponential_backoff: true
+  
+  # Network error handling
+  network:
+    retry_delay: 5  # seconds
+    max_retries: 3
+    exponential_backoff: true
+  
+  # General error handling
+  general:
+    retry_delay: 2  # seconds
+    max_retries: 2
+    exponential_backoff: false
+
+# Fallback Configuration
+fallback:
+  # Fallback mode settings
+  enabled: true
+  mode: "simple_agent"  # Options: "simple_agent", "rule_based", "mock_ai"
+  
+  # SimpleAgent fallback settings
+  simple_agent:
+    model: "gemini-1.5-flash-latest"
+    temperature: 0.7
+    max_tokens: 2048
+    timeout: 60
+  
+  # Rule-based fallback settings
+  rule_based:
+    delegation_rules:
+      - pattern: "district heating|central heating|cha"
+        agent: "CHA"
+      - pattern: "heat pump|decentralized|dha"
+        agent: "DHA"
+      - pattern: "compare|comparison|scenario"
+        agent: "CA"
+      - pattern: "analyze|analysis|comprehensive"
+        agent: "AA"
+      - pattern: "data|explore|results|streets"
+        agent: "DEA"
+      - pattern: "insights|recommendations|gpt"
+        agent: "EGPT"
+  
+  # Mock AI fallback settings
+  mock_ai:
+    response_delay: 1  # seconds
+    success_rate: 0.95
+
+# Logging and Monitoring
+logging:
+  # Log levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: "INFO"
+  
+  # Log destinations
+  destinations:
+    - console
+    - file
+  
+  # File logging
+  file:
+    path: "logs/gemini_adk.log"
+    max_size: "10MB"
+    backup_count: 5
+  
+  # Log formatting
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Performance Monitoring
+monitoring:
+  # Enable performance monitoring
+  enabled: true
+  
+  # Metrics collection
+  metrics:
+    - response_time
+    - token_usage
+    - error_rate
+    - quota_usage
+  
+  # Performance thresholds
+  thresholds:
+    response_time_warning: 10  # seconds
+    response_time_error: 30  # seconds
+    error_rate_warning: 0.05  # 5%
+    error_rate_error: 0.10  # 10%
+
+# Security and Privacy
+security:
+  # API key management
+  api_key:
+    # Use environment variable if available
+    env_var: "GEMINI_API_KEY"
+    # Fallback to config file
+    fallback_to_config: true
+  
+  # Request logging (for debugging)
+  log_requests: false
+  log_responses: false
+  
+  # Data privacy
+  privacy:
+    # Don't log sensitive data
+    mask_api_key: true
+    mask_user_input: false  # Set to true for production
+
+# Development and Testing
+development:
+  # Development mode settings
+  dev_mode: false
+  
+  # Testing settings
+  testing:
+    # Use mock responses for testing
+    use_mocks: false
+    
+    # Test data directory
+    test_data_dir: "test_data"
+    
+    # Test timeout
+    timeout: 30  # seconds
+
+# Environment-specific overrides
+environments:
+  # Development environment
+  development:
+    logging:
+      level: "DEBUG"
+    monitoring:
+      enabled: true
+    fallback:
+      enabled: true
+  
+  # Production environment
+  production:
+    logging:
+      level: "WARNING"
+    monitoring:
+      enabled: true
+    fallback:
+      enabled: true
+    security:
+      log_requests: false
+      log_responses: false
+      privacy:
+        mask_user_input: true
+  
+  # Testing environment
+  testing:
+    logging:
+      level: "INFO"
+    monitoring:
+      enabled: false
+    fallback:
+      enabled: true
+    development:
+      use_mocks: true

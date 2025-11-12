@@ -1,0 +1,70 @@
+{
+  "capex_impact": {
+    "fixed_cost_eur": 29400.0,
+    "sized_cost_eur": 28775.0,
+    "cost_difference_eur": -625.0,
+    "cost_percentage_change": -2.1258503401360542,
+    "category_analysis": {
+      "service_connections": {
+        "pipe_count": 1,
+        "fixed_cost_eur": 6000.0,
+        "sized_cost_eur": 4500.0,
+        "cost_difference_eur": -1500.0,
+        "cost_percentage_change": -25.0
+      }
+    },
+    "cost_effectiveness": "positive"
+  },
+  "opex_impact": {
+    "fixed_pump_energy_kwh": 100.0,
+    "sized_pump_energy_kwh": 0.13333333333333333,
+    "annual_opex_difference_eur": -21.970666666666666,
+    "lifetime_opex_impact_eur": -280.85885703459587,
+    "opex_improvement": "positive"
+  },
+  "hydraulic_improvement": {
+    "hydraulic_metrics": {
+      "average_velocity_ms": 1.5,
+      "max_velocity_ms": 1.5,
+      "min_velocity_ms": 1.5,
+      "average_pressure_drop_pa_per_m": 1000.0,
+      "max_pressure_drop_pa_per_m": 1000,
+      "min_pressure_drop_pa_per_m": 1000
+    },
+    "efficiency_improvements": {
+      "efficiency_score": 1.5,
+      "overall_efficiency_gain": 0.5,
+      "velocity_optimization": "optimal",
+      "pressure_optimization": "optimal"
+    },
+    "reliability_improvements": {
+      "overall_reliability": 1.0,
+      "velocity_reliability": 1.0,
+      "pressure_reliability": 1.0,
+      "reliability_improvement": 0.19999999999999996
+    },
+    "overall_improvement": "positive"
+  },
+  "economic_metrics": {
+    "net_benefit_eur": 344.14114296540413,
+    "payback_period_years": 28.447020269450178,
+    "net_present_value_eur": 344.14114296540413,
+    "internal_rate_of_return": 0.03515306666666666,
+    "benefit_cost_ratio": -0.4493741712553534,
+    "economic_viability": "not_viable"
+  },
+  "recommendations": [
+    "Pipe sizing optimization may not be economically viable - consider alternatives",
+    "Long payback period - evaluate other optimization opportunities"
+  ],
+  "summary": {
+    "analysis_type": "comprehensive_cost_benefit",
+    "total_capex_impact_eur": -625.0,
+    "total_opex_impact_eur": -280.85885703459587,
+    "net_benefit_eur": 344.14114296540413,
+    "payback_period_years": 28.447020269450178,
+    "economic_viability": "not_viable",
+    "recommendation_count": 2,
+    "analysis_timestamp": "2025-09-22T21:54:56.519631"
+  }
+}

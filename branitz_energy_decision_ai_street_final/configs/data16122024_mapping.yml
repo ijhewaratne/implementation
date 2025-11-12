@@ -1,0 +1,112 @@
+# Column mapping configuration for data dataset to LFA
+# This file maps the actual column names in the data dataset to the standardized names required by LFA
+
+# Building data column mappings
+columns:
+  # Required fields
+  building_id: "GebaeudeID"  # Building identifier
+  function: "Gebaeudefunktion"  # Building function/type
+  
+  # Areas and dimensions
+  floor_area:
+    sources: ["Nutzflaeche", "Geschossflaeche", "Flaeche"]
+    default: 100.0
+  wall_area:
+    sources: ["Wandflaeche", "Aussenwandflaeche"]
+    default: null  # Will be computed from floor_area
+  roof_area:
+    sources: ["Dachflaeche", "Dachflaeche"]
+    default: null  # Will be computed from floor_area
+  volume:
+    sources: ["Volumen", "Raumvolumen"]
+    default: null  # Will be computed from floor_area and height
+  height:
+    sources: ["Hoehe", "Gebaeudehoehe", "Geschosshoehe"]
+    default: 3.0
+  
+  # U-values (thermal transmittance)
+  U_Aussenwand:
+    sources: ["U_Aussenwand", "U_Wand", "U_Value_Wall"]
+    default: 1.5
+  U_Dach:
+    sources: ["U_Dach", "U_Roof", "U_Value_Roof"]
+    default: 0.3
+  U_Boden:
+    sources: ["U_Boden", "U_Floor", "U_Value_Floor"]
+    default: 0.5
+  U_Fenster:
+    sources: ["U_Fenster", "U_Window", "U_Value_Window"]
+    default: 1.3
+  
+  # Window ratio
+  fensterflaechenanteil:
+    sources: ["Fensterflaechenanteil", "Window_Ratio", "Fensteranteil"]
+    default: 0.15
+  
+  # Indoor temperature
+  innentemperatur:
+    sources: ["Innentemperatur", "Indoor_Temp", "T_in", "Room_Temp"]
+    default: 20.0
+  
+  # Air exchange rate
+  n:
+    sources: ["n", "Luftwechselrate", "Air_Exchange", "Ventilation_Rate"]
+    default: 0.5
+  
+  # Renovation status
+  sanierungszustand:
+    sources: ["Sanierungszustand", "Renovation_Status", "Sanierung"]
+    default: "unsaniert"
+  
+  # Year built
+  year:
+    sources: ["Baujahr", "Year_Built", "Construction_Year"]
+    default: 1990
+
+# Weather data column mappings
+weather_columns:
+  timestamp: "timestamp"  # Will be created from date/time columns
+  T_out: "t"  # Temperature from TRY data
+  RH: "rf"  # Relative humidity (if available)
+  GHI: "gh"  # Global horizontal irradiance (if available)
+
+# Default values for missing data
+defaults:
+  # Building defaults
+  height: 3.0  # meters
+  innentemperatur: 20.0  # °C
+  n: 0.5  # 1/h (air exchange rate)
+  fensterflaechenanteil: 0.15  # window area ratio
+  sanierungszustand: "unsaniert"  # renovation status
+  year: 1990  # construction year
+  
+  # U-value defaults (W/m²K)
+  U_Aussenwand: 1.5  # wall
+  U_Dach: 0.3  # roof
+  U_Boden: 0.5  # floor
+  U_Fenster: 1.3  # windows
+  
+  # Weather defaults
+  RH: 60.0  # relative humidity (%)
+  GHI: 0.0  # global horizontal irradiance (W/m²)
+
+# Required fields (must be present or have defaults)
+required:
+  - building_id
+  - function
+  - floor_area
+
+# Physics computation settings
+physics:
+  # Renovation factor mapping
+  renovation_factors:
+    unsaniert: 1.00
+    teilsaniert: 0.71
+    vollsaniert: 0.30
+  
+  # Air properties
+  air_heat_capacity: 0.34  # Wh/(m³K) - ρ·c_p of air
+  
+  # Area computation factors
+  wall_area_factor: 2.5  # wall_area = floor_area * factor
+  roof_area_factor: 1.1  # roof_area = floor_area * factor

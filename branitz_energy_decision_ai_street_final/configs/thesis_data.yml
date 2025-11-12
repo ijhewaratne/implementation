@@ -1,0 +1,68 @@
+# Thesis Data Integration Configuration
+# ====================================
+# Configuration for integrating thesis-data-2 with physics-based heat demand
+
+# Data sources from thesis-data-2 directory
+data_sources:
+  # TRY weather data (8760-hour temperature profiles)
+  weather_try: "thesis-data-2/wetter-data/TRY2015_517475143730_Jahr.dat"
+  
+  # Physics-based heating demand calculations
+  heating_data: "thesis-data-2/pipes-sim/ergebnis_momentane_heizleistungV3.json"
+  
+  # Electrical consumption profiles for heat pump analysis
+  electrical_profiles: "thesis-data-2/load-profile-generator/gebaeude_lastphasenV2_verbrauch.json"
+  
+  # Building characteristics (optional)
+  building_data: "thesis-data-2/gebaeudedaten/gebaeudeanalyse.json"
+
+# Weather scenarios
+scenarios:
+  default: "mittleres_jahr"  # Default scenario to use
+  available: 
+    - "mittleres_jahr"  # Average year
+    - "kaltes_jahr"     # Cold year  
+    - "heisses_jahr"    # Hot year
+
+# Heat pump configuration for DHA
+heat_pump:
+  cop_model: "constant"     # COP model: "constant" or "temperature_dependent"
+  cop_value: 3.0           # COP value for constant model
+  
+  # Temperature-dependent COP bins (if using temperature_dependent model)
+  cop_bins:
+    - { t_min: -50, t_max: -10, cop: 2.0 }
+    - { t_min: -10, t_max: 0,  cop: 2.5 }
+    - { t_min: 0,   t_max: 10, cop: 3.0 }
+    - { t_min: 10,  t_max: 50, cop: 3.5 }
+
+# Output configuration
+output:
+  dir: "processed/lfa"           # Output directory (maintains LFA compatibility)
+  format: "lfa_compatible"       # Output format
+  create_ready_file: true        # Create .ready file for pipeline coordination
+
+# Processing options
+processing:
+  batch_size: 100               # Process buildings in batches
+  parallel_processing: false    # Enable parallel processing (requires multiprocessing)
+  interpolation_method: "linear" # Interpolation method for temperature-power mapping
+  
+# Logging configuration
+logging:
+  level: "INFO"                 # Logging level: DEBUG, INFO, WARNING, ERROR
+  save_metrics: true           # Save processing metrics
+  metrics_file: "eval/lfa/thesis_integration_metrics.csv"
+
+# Validation settings
+validation:
+  check_data_integrity: true    # Validate input data integrity
+  check_output_format: true     # Validate output format compatibility
+  heating_threshold: 15.0       # Temperature threshold for heating (°C)
+  min_building_count: 50        # Minimum number of buildings to process
+
+# Performance settings
+performance:
+  memory_limit_mb: 2048        # Memory limit for processing
+  timeout_seconds: 3600        # Timeout for processing (1 hour)
+  cache_intermediate_results: true  # Cache intermediate results for faster reprocessing

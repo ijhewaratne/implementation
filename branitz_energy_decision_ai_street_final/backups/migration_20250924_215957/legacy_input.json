@@ -1,0 +1,1 @@
+{"metadata": {"simulation_timestamp": "2024-01-15T10:30:00Z", "pandapipes_version": "0.7.0", "convergence_status": "converged"}, "pipes": [{"id": 1, "length_km": 0.5, "diameter_m": 0.2, "max_velocity": 1.5, "max_pressure_drop": 400}]}

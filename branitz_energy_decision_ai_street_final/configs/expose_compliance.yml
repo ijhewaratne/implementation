@@ -1,0 +1,111 @@
+version: 1
+project: Branitz Energy Decision AI
+areas:
+  - id: LFA
+    title: Load Forecasting Agent
+    must_have:
+      - description: 8760h per-building forecasts with P10/P50/P90
+        evidence:
+          files_any:
+            - "lfa/**.py"
+          functions_any:
+            - "forecast_8760"
+        tests_any:
+          - "tests/**lfa**.py"
+      - description: Guideline-14 metrics (MAE, RMSE, MAPE) and PICP 80/90
+        evidence:
+          files_any:
+            - "lfa/**.py"
+          strings_any:
+            - "PICP"
+            - "Guideline-14"
+  - id: CHA
+    title: District Heating (DH) optimizer & EN 13941
+    must_have:
+      - description: NPV-based DN optimization (v ≤ 1.5 m/s, ΔT ≥ 30 K)
+        evidence:
+          files_any:
+            - "optimize/diameter_optimizer.py"
+            - "src/npv_pipe_optimizer.py"
+          functions_any:
+            - "DiameterOptimizer.run"
+            - "check_velocity"
+            - "check_deltaT"
+          tests_any:
+            - "tests/**diameter_optimizer**.py"
+            - "tests/**en13941**.py"
+      - description: Compliance report (HTML) and DN GeoJSON export
+        evidence:
+          files_any:
+            - "optimize/reporting.py"
+          functions_any:
+            - "write_compliance_report"
+            - "export_geojson_with_dn"
+  - id: DHA
+    title: LV Feeder (HP) grid checks
+    must_have:
+      - description: Top-10 peak hours pandapower studies (util ≥80%, voltage ±10%)
+        evidence:
+          files_any:
+            - "src/lv_feeder_analyzer.py"
+          strings_any:
+            - "pandapower"
+            - "runpp"
+            - "utilization_max"
+            - "voltage_min"
+          tests_any:
+            - "tests/**lv_feeder**.py"
+  - id: ECON
+    title: Techno-economics & uncertainty
+    must_have:
+      - description: Monte Carlo (N≈500) for NPV/LCoH & CO₂ distributions
+        evidence:
+          files_any:
+            - "econ/monte_carlo.py"
+          strings_any:
+            - "lognorm"
+            - "co2"
+            - "trials"
+      - description: NPV & LCoH benchmarks vs AGFW/FfE (documented)
+        evidence:
+          files_any:
+            - "validation/**.py"
+            - "reports/**.py"
+          strings_any:
+            - "AGFW"
+            - "FfE"
+  - id: REPORTS
+    title: Executive decision report
+    must_have:
+      - description: HTML/PDF executive summary with uncertainty bands and links
+        evidence:
+          files_any:
+            - "reports/executive_summary.py"
+          strings_any:
+            - "P10"
+            - "P50"
+            - "P90"
+  - id: GPKG
+    title: Consolidated GeoPackage export
+    must_have:
+      - description: All layers (DH mains/services with DN, HP suitability, feeder warnings)
+        evidence:
+          files_any:
+            - "export/gpkg.py"
+          strings_any:
+            - "GeoPackage"
+            - ".gpkg"
+  - id: VALID
+    title: Validation suite
+    must_have:
+      - description: One-pager with badges (Guideline-14, EN 13941, VDE/FNN, Econ benchmark)
+        evidence:
+          files_any:
+            - "validation/validation_suite.py"
+          strings_any:
+            - "ASHRAE"
+            - "EN 13941"
+            - "VDE"
+            - "FNN"
+            - "AGFW"
+            - "FfE" 

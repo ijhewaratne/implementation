@@ -1,0 +1,367 @@
+# Centralized Heating Agent (CHA) Configuration
+
+# Data paths
+streets_path: "data/geojson/minimal_streets.geojson"
+buildings_path: "data/geojson/test_buildings_valid.geojson"
+
+# Plant location (CHP plant in Branitz) - Updated for minimal street network
+plant_lon: 456100.0  # UTM coordinates near our minimal streets
+plant_lat: 5734100.0
+
+# Network parameters
+max_building_distance_m: 50  # Maximum distance from building to street
+connectivity_fix_distance_m: 100  # Maximum distance for connectivity fixes
+
+# Output settings
+output_dir: "processed/cha"
+map_filename: "network_map.html"
+geopackage_filename: "cha.gpkg"
+
+# Temperature and pressure settings
+supply_temperature_c: 70
+return_temperature_c: 40
+supply_pressure_bar: 6.0
+return_pressure_bar: 2.0
+
+# Building attributes (fallback values)
+default_heating_load_kw: 10.0
+default_annual_heat_demand_kwh: 24000
+default_building_type: "residential"
+default_building_area_m2: 120
+
+# Hydraulic simulation settings
+hydraulic_simulation:
+  enabled: true
+  mode: sequential  # Enable heat transfer
+  max_iterations: 100
+  convergence_tolerance: 1e-6
+  fluid_properties:
+    temperature_c: 80
+    pressure_bar: 2.0
+  thermal_parameters:
+    supply_temp_c: 80
+    return_temp_c_init: 50
+    ground_temp_c: 10
+    pipe_sections_default: 8
+    pipe_u_w_per_m2k_default: 0.6
+  auto_resize:
+    enabled: true
+    max_iterations: 3
+    sizing_priority: ["services", "distribution", "mains"]
+    monotone_sizing: true
+  fallback_to_topology_only: true
+
+# Standards limits (corrected values)
+standards_limits:
+  pressure_drop_pa_per_m:
+    mains: 300
+    distribution: 400
+    services: 500
+  velocity_ms:
+    mains: 2.0
+    distribution: 2.0
+    services: 1.5
+  temperature_drop_k:
+    minimum: 30
+    maximum: 50
+
+# Legacy pandapipes settings (for backward compatibility)
+enable_pandapipes_simulation: true
+simulation_output_dir: "eval/cha"
+default_pipe_diameter_m: 0.1
+default_pipe_roughness_mm: 0.1
+default_mass_flow_kg_s: 0.1
+
+# Enhanced Pipe Sizing Configuration
+pipe_sizing:
+  # Enable intelligent pipe sizing
+  enable_intelligent_sizing: true
+  
+  # Standard pipe diameters (mm) - DN series
+  standard_diameters: [25, 32, 40, 50, 63, 80, 100, 125, 150, 200, 250, 300, 400]
+  standard_diameters_mm: [25, 32, 40, 50, 63, 80, 100, 125, 150, 200, 250, 300, 400]  # Alias for compatibility
+  
+  # Hydraulic constraints
+  max_velocity_ms: 3.0
+  min_velocity_ms: 0.5
+  max_pressure_drop_pa_per_m: 5000
+  
+  # Water properties
+  water_density_kg_m3: 977.8  # At 70°C
+  water_specific_heat_j_per_kgk: 4180
+  water_dynamic_viscosity_pa_s: 0.000404
+  
+  # Pipe material properties
+  pipe_roughness_mm: 0.1
+  pipe_material: "steel"
+  insulation_material: "polyurethane"
+  insulation_thickness_mm: 30
+  
+  # Pipe type sizing rules
+  main_pipes:
+    min_diameter_mm: 200
+    max_diameter_mm: 400
+    flow_threshold_kg_s: 2.0
+    velocity_limit_ms: 2.0
+    pressure_drop_limit_pa_per_m: 3000
+    material: "steel"
+    insulation_required: true
+    
+  distribution_pipes:
+    min_diameter_mm: 100
+    max_diameter_mm: 200
+    flow_threshold_kg_s: 0.5
+    velocity_limit_ms: 2.0
+    pressure_drop_limit_pa_per_m: 4000
+    material: "steel"
+    insulation_required: true
+    
+  service_connections:
+    min_diameter_mm: 50
+    max_diameter_mm: 100
+    flow_threshold_kg_s: 0.1
+    velocity_limit_ms: 1.5
+    pressure_drop_limit_pa_per_m: 5000
+    material: "steel_or_plastic"
+    insulation_required: true
+  
+  # Cost model (EUR per meter)
+  cost_per_meter:
+    25: 25
+    32: 30
+    40: 35
+    50: 45
+    63: 55
+    80: 65
+    100: 80
+    125: 100
+    150: 130
+    200: 170
+    250: 220
+    300: 280
+    400: 380
+  
+  # Installation and material factors
+  installation_factor: 1.5
+  material_factor: 1.0
+  insulation_cost_per_m: 15.0
+  
+  # Safety and design factors
+  safety_factor: 1.1
+  diversity_factor: 0.8
+  design_full_load_hours: 2000
+  
+  # Engineering standards
+  standards:
+    EN_13941:
+      enabled: true
+      max_velocity_ms: 2.0
+      max_pressure_drop_pa_per_m: 5000
+      min_velocity_ms: 0.1
+      temperature_range_c: [40, 90]
+      pressure_range_bar: [2, 16]
+      min_insulation_thickness_mm: 30
+      
+    DIN_1988:
+      enabled: true
+      main_pipes_velocity_ms: 2.0
+      distribution_pipes_velocity_ms: 2.0
+      service_connections_velocity_ms: 1.5
+      main_pipes_pressure_drop_pa_per_m: 3000
+      distribution_pressure_drop_pa_per_m: 4000
+      service_pressure_drop_pa_per_m: 5000
+      
+    VDI_2067:
+      enabled: true
+      max_payback_period_years: 15
+      min_internal_rate_of_return: 0.06
+      max_lifecycle_cost_eur_per_mwh: 50
+      min_system_efficiency: 0.85
+      max_heat_loss_percentage: 0.15
+      min_pump_efficiency: 0.75
+      
+    Local_Codes:
+      enabled: true
+      min_safety_factor: 2.0
+      max_working_pressure_bar: 16
+      min_wall_thickness_mm: 3.0
+      max_noise_level_db: 45
+      max_ground_temperature_rise_k: 5
+      min_insulation_efficiency: 0.95
+  
+  # Network hierarchy levels
+  hierarchy_levels:
+    1:
+      name: "Service Connections"
+      min_flow_kg_s: 0
+      max_flow_kg_s: 2
+      typical_diameter_mm: [25, 32, 40]
+      
+    2:
+      name: "Street Distribution"
+      min_flow_kg_s: 2
+      max_flow_kg_s: 10
+      typical_diameter_mm: [50, 63, 80]
+      
+    3:
+      name: "Area Distribution"
+      min_flow_kg_s: 10
+      max_flow_kg_s: 30
+      typical_diameter_mm: [100, 125, 150]
+      
+    4:
+      name: "Main Distribution"
+      min_flow_kg_s: 30
+      max_flow_kg_s: 80
+      typical_diameter_mm: [200, 250, 300]
+      
+    5:
+      name: "Primary Main"
+      min_flow_kg_s: 80
+      max_flow_kg_s: 200
+      typical_diameter_mm: [300, 400, 500]
+  
+  # Validation settings
+  validation:
+    enable_validation: true
+    compliance_threshold: 0.95
+    critical_violation_threshold: 0.0
+    warning_violation_threshold: 0.1
+    
+  # Output settings
+  output:
+    export_enhanced_data: true
+    export_validation_results: true
+    export_cost_analysis: true
+    export_performance_metrics: true
+
+# Backward Compatibility and Migration Settings
+compatibility:
+  # Feature flags for new hydraulic simulation capabilities
+  enable_hydraulic_simulation: true
+  fallback_to_topology_only: true
+  legacy_output_format: false
+  migration_mode: false
+  
+  # Schema version compatibility
+  schema_version: "2.0.0"
+  support_legacy_schema: true
+  auto_migrate_schema: true
+  
+  # Output format compatibility
+  maintain_old_outputs: true
+  dual_output_mode: false
+  legacy_validation: false
+  
+  # API compatibility
+  maintain_legacy_api: true
+  deprecated_warnings: true
+  api_version: "2.0"
+
+backward_compatibility:
+  # Legacy system support
+  maintain_old_outputs: true
+  dual_output_mode: false
+  legacy_validation: false
+  
+  # Legacy file formats
+  export_legacy_csv: false
+  export_legacy_json: false
+  export_legacy_xml: false
+  
+  # Legacy parameter names
+  use_legacy_parameter_names: false
+  parameter_mapping:
+    max_velocity: "max_velocity_ms"
+    max_pressure_drop: "max_pressure_drop_pa_per_m"
+    pipe_diameter: "diameter_m"
+    flow_rate: "flow_kg_s"
+  
+  # Legacy validation rules
+  use_legacy_validation_rules: false
+  legacy_standards_only: false
+  
+  # Migration settings
+  migration:
+    enabled: false
+    auto_migrate_data: false
+    backup_original_files: true
+    migration_log_level: "INFO"
+    rollback_on_failure: true
+    
+    # Data migration settings
+    data_migration:
+      convert_units: true
+      update_schema_version: true
+      validate_after_migration: true
+      preserve_metadata: true
+      
+    # Output migration settings
+    output_migration:
+      convert_to_new_format: true
+      maintain_legacy_files: false
+      update_file_extensions: true
+      compress_legacy_files: false
+      
+    # Configuration migration settings
+    config_migration:
+      update_parameter_names: true
+      add_missing_parameters: true
+      validate_new_config: true
+      backup_old_config: true
+
+# Migration and Upgrade Settings
+migration:
+  # General migration settings
+  enabled: false
+  mode: "automatic"  # automatic, manual, guided
+  
+  # Migration phases
+  phases:
+    data_migration:
+      enabled: true
+      priority: 1
+      description: "Migrate data formats and schemas"
+      
+    output_migration:
+      enabled: true
+      priority: 2
+      description: "Migrate output formats and structures"
+      
+    config_migration:
+      enabled: true
+      priority: 3
+      description: "Migrate configuration parameters"
+      
+    validation_migration:
+      enabled: true
+      priority: 4
+      description: "Migrate validation rules and standards"
+  
+  # Migration safety settings
+  safety:
+    backup_before_migration: true
+    validate_after_migration: true
+    rollback_on_failure: true
+    test_migration_first: true
+    
+  # Migration logging
+  logging:
+    log_level: "INFO"
+    log_file: "logs/migration.log"
+    detailed_logging: true
+    progress_reporting: true
+    
+  # Migration validation
+  validation:
+    validate_schema_compatibility: true
+    validate_data_integrity: true
+    validate_output_format: true
+    validate_configuration: true
+    
+  # Migration rollback
+  rollback:
+    enabled: true
+    backup_retention_days: 30
+    auto_cleanup_backups: true
+    rollback_confirmation_required: true

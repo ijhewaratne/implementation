@@ -1,0 +1,283 @@
+# Deployment Configuration for Branitz Energy Decision AI - Enhanced Multi-Agent System with Google ADK
+
+# Environment Configuration
+environment: "development"  # development, staging, production
+
+# ADK Configuration
+adk:
+  enabled: true
+  fallback_enabled: true
+  quota_retry_delay: 60
+  max_retries: 3
+  error_handling: "comprehensive"
+
+# System Configuration
+system:
+  python_version: "3.9"
+  create_venv: true
+  backup_existing: true
+  install_dependencies: true
+  run_tests: true
+  validate_config: true
+
+# Deployment Options
+deployment:
+  # Docker Configuration
+  docker:
+    enabled: true
+    multi_stage_build: true
+    target_stage: "adk-production"  # base, development, production, adk-production
+  
+  # Virtual Environment Configuration
+  virtual_environment:
+    enabled: true
+    path: "venv"
+    python_version: "3.9"
+    requirements_file: "requirements.txt"
+  
+  # Configuration Management
+  configuration:
+    validate_yaml: true
+    backup_existing: true
+    create_templates: true
+  
+  # Testing Configuration
+  testing:
+    run_unit_tests: true
+    run_integration_tests: true
+    run_performance_tests: false
+    test_timeout: 300
+  
+  # Logging Configuration
+  logging:
+    level: "INFO"
+    file: "deployment.log"
+    console: true
+    max_size: "10MB"
+    backup_count: 5
+
+# API Configuration
+api:
+  gemini:
+    api_key_required: true
+    model: "gemini-1.5-flash-latest"
+    temperature: 0.7
+    timeout: 30
+    max_retries: 3
+  
+  adk:
+    enabled: true
+    fallback_to_simpleagent: true
+    quota_management: true
+    rate_limiting: true
+
+# Agent Configuration
+agents:
+  # EnergyPlannerAgent (EPA) - Master Orchestrator
+  energy_planner:
+    enabled: true
+    delegation_enabled: true
+    tools: []
+  
+  # CentralHeatingAgent (CHA) - District Heating Expert
+  central_heating:
+    enabled: true
+    tools: ["run_comprehensive_dh_analysis"]
+    dual_pipe_analysis: true
+    hydraulic_simulation: true
+  
+  # DecentralizedHeatingAgent (DHA) - Heat Pump Expert
+  decentralized_heating:
+    enabled: true
+    tools: ["run_comprehensive_hp_analysis"]
+    power_flow_simulation: true
+    electrical_infrastructure: true
+  
+  # ComparisonAgent (CA) - Scenario Comparison Expert
+  comparison:
+    enabled: true
+    tools: ["compare_comprehensive_scenarios"]
+    comprehensive_metrics: true
+    recommendation_generation: true
+  
+  # AnalysisAgent (AA) - Comprehensive Analysis Expert
+  analysis:
+    enabled: true
+    tools: [
+      "run_comprehensive_hp_analysis",
+      "run_comprehensive_dh_analysis",
+      "compare_comprehensive_scenarios",
+      "generate_comprehensive_kpi_report"
+    ]
+    multi_scenario_analysis: true
+  
+  # DataExplorerAgent (DEA) - Data & Results Expert
+  data_explorer:
+    enabled: true
+    tools: [
+      "get_all_street_names",
+      "list_available_results",
+      "analyze_kpi_report"
+    ]
+    street_information: true
+    results_analysis: true
+  
+  # EnergyGPT (EGPT) - AI-Powered Analysis Expert
+  energy_gpt:
+    enabled: true
+    tools: ["analyze_kpi_report"]
+    ai_powered_insights: true
+    recommendation_generation: true
+
+# Tools Configuration
+tools:
+  # Enhanced Tools
+  enhanced_tools:
+    enabled: true
+    adk_compatible: true
+    error_handling: true
+    performance_optimization: true
+  
+  # Legacy Tools (for backward compatibility)
+  legacy_tools:
+    enabled: true
+    fallback_support: true
+
+# Performance Configuration
+performance:
+  # Memory Management
+  memory:
+    max_usage_mb: 2048
+    monitoring_enabled: true
+    cleanup_enabled: true
+  
+  # CPU Management
+  cpu:
+    max_usage_percent: 80
+    monitoring_enabled: true
+  
+  # Response Time
+  response_time:
+    max_duration_ms: 30000
+    monitoring_enabled: true
+  
+  # Concurrent Operations
+  concurrency:
+    max_concurrent_operations: 5
+    queue_size: 100
+
+# Security Configuration
+security:
+  # API Security
+  api_security:
+    rate_limiting: true
+    quota_management: true
+    error_handling: true
+  
+  # Data Security
+  data_security:
+    encryption_at_rest: false
+    encryption_in_transit: true
+    access_control: true
+  
+  # Environment Security
+  environment_security:
+    non_root_user: true
+    container_security: true
+    network_security: true
+
+# Monitoring Configuration
+monitoring:
+  # System Monitoring
+  system_monitoring:
+    enabled: true
+    metrics_collection: true
+    health_checks: true
+    alerting: false
+  
+  # Application Monitoring
+  application_monitoring:
+    enabled: true
+    performance_metrics: true
+    error_tracking: true
+    usage_analytics: true
+  
+  # Logging
+  logging:
+    enabled: true
+    structured_logging: true
+    log_aggregation: false
+    log_retention_days: 30
+
+# Backup Configuration
+backup:
+  # Configuration Backup
+  configuration_backup:
+    enabled: true
+    backup_before_deployment: true
+    retention_days: 30
+  
+  # Data Backup
+  data_backup:
+    enabled: false
+    schedule: "0 2 * * *"  # Daily at 2 AM
+    retention_days: 7
+  
+  # Results Backup
+  results_backup:
+    enabled: true
+    backup_after_analysis: true
+    retention_days: 90
+
+# Deployment Validation
+validation:
+  # Pre-deployment Validation
+  pre_deployment:
+    check_prerequisites: true
+    validate_configuration: true
+    check_dependencies: true
+    verify_permissions: true
+  
+  # Post-deployment Validation
+  post_deployment:
+    run_tests: true
+    verify_functionality: true
+    check_health: true
+    validate_performance: true
+  
+  # Continuous Validation
+  continuous:
+    health_checks: true
+    performance_monitoring: true
+    error_detection: true
+    automatic_recovery: false
+
+# Environment-specific Overrides
+environments:
+  development:
+    logging:
+      level: "DEBUG"
+    testing:
+      run_performance_tests: false
+    monitoring:
+      alerting: false
+  
+  staging:
+    logging:
+      level: "INFO"
+    testing:
+      run_performance_tests: true
+    monitoring:
+      alerting: true
+  
+  production:
+    logging:
+      level: "WARNING"
+    testing:
+      run_performance_tests: true
+    monitoring:
+      alerting: true
+    security:
+      api_security:
+        rate_limiting: true
+        quota_management: true

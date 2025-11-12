@@ -1,0 +1,153 @@
+adk:
+  agents:
+    analysis:
+      max_tokens: 2048
+      temperature: 0.7
+    central_heating:
+      max_tokens: 2048
+      temperature: 0.7
+    comparison:
+      max_tokens: 2048
+      temperature: 0.6
+    data_explorer:
+      max_tokens: 1024
+      temperature: 0.5
+    decentralized_heating:
+      max_tokens: 2048
+      temperature: 0.7
+    default:
+      max_tokens: 2048
+      model: gemini-1.5-flash-latest
+      temperature: 0.7
+      timeout: 60
+    energy_gpt:
+      max_tokens: 2048
+      temperature: 0.8
+    energy_planner:
+      max_tokens: 1024
+      temperature: 0.5
+  auto_detect: true
+  enabled: true
+  initialization:
+    retry_attempts: 3
+    retry_delay: 5
+    timeout: 30
+api_key: AIzaSyAy-ybjltiDoqVNT9oU4toNoHbX0-KM0O4
+development:
+  dev_mode: false
+  testing:
+    test_data_dir: test_data
+    timeout: 30
+    use_mocks: false
+environments:
+  development:
+    fallback:
+      enabled: true
+    logging:
+      level: DEBUG
+    monitoring:
+      enabled: true
+  production:
+    fallback:
+      enabled: true
+    logging:
+      level: WARNING
+    monitoring:
+      enabled: true
+    security:
+      log_requests: false
+      log_responses: false
+      privacy:
+        mask_user_input: true
+  testing:
+    development:
+      use_mocks: true
+    fallback:
+      enabled: true
+    logging:
+      level: INFO
+    monitoring:
+      enabled: false
+error_handling:
+  general:
+    exponential_backoff: false
+    max_retries: 2
+    retry_delay: 2
+  network:
+    exponential_backoff: true
+    max_retries: 3
+    retry_delay: 5
+  quota:
+    exponential_backoff: true
+    max_retries: 3
+    retry_delay: 60
+fallback:
+  enabled: true
+  mock_ai:
+    response_delay: 1
+    success_rate: 0.95
+  mode: simple_agent
+  rule_based:
+    delegation_rules:
+    - agent: CHA
+      pattern: district heating|central heating|cha
+    - agent: DHA
+      pattern: heat pump|decentralized|dha
+    - agent: CA
+      pattern: compare|comparison|scenario
+    - agent: AA
+      pattern: analyze|analysis|comprehensive
+    - agent: DEA
+      pattern: data|explore|results|streets
+    - agent: EGPT
+      pattern: insights|recommendations|gpt
+  simple_agent:
+    max_tokens: 2048
+    model: gemini-1.5-flash-latest
+    temperature: 0.7
+    timeout: 60
+logging:
+  destinations:
+  - console
+  - file
+  file:
+    backup_count: 5
+    max_size: 10MB
+    path: logs/gemini_adk.log
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  level: INFO
+max_tokens: 2048
+model: gemini-1.5-flash-latest
+monitoring:
+  enabled: true
+  metrics:
+  - response_time
+  - token_usage
+  - error_rate
+  - quota_usage
+  thresholds:
+    error_rate_error: 0.1
+    error_rate_warning: 0.05
+    response_time_error: 30
+    response_time_warning: 10
+security:
+  api_key:
+    env_var: GEMINI_API_KEY
+    fallback_to_config: true
+  log_requests: false
+  log_responses: false
+  privacy:
+    mask_api_key: true
+    mask_user_input: false
+temperature: 0.7
+tools:
+  comprehensive_analysis:
+    retry_attempts: 1
+    timeout: 300
+  data_exploration:
+    retry_attempts: 2
+    timeout: 60
+  execution:
+    retry_attempts: 2
+    retry_delay: 3
+    timeout: 120

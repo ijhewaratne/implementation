@@ -1,0 +1,44 @@
+# Interactive CHA Configuration
+# This configuration enables interactive street selection and analysis
+
+# Data paths
+streets_path: "data/geojson/strassen_mit_adressenV3.geojson"
+buildings_path: "data/geojson/hausumringe_mit_adressenV3.geojson"
+
+# Output configuration
+output_dir: "street_analysis_outputs"
+map_filename: "dual_pipe_map.html"
+geopackage_filename: "cha.gpkg"
+
+# Plant location (CHP plant in Branitz)
+plant_lon: 14.3453979
+plant_lat: 51.76274
+
+# Temperature settings
+supply_temperature_c: 70
+return_temperature_c: 40
+
+# Network parameters
+max_building_distance_m: 50
+default_heating_load_kw: 10.0
+default_annual_heat_demand_kwh: 24000
+default_building_type: "residential"
+default_building_area_m2: 120
+
+# Interactive features
+enable_street_selection: true
+enable_multiple_streets: true
+enable_entire_region: true
+enable_comprehensive_dashboards: true
+enable_advanced_layer_control: true
+
+# Analysis options
+scenario_name: "interactive_analysis"
+enable_load_profiles: false
+enable_timeseries_simulation: false
+enable_compliance_checking: false
+
+
+
+
+

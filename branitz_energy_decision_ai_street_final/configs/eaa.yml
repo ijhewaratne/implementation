@@ -1,0 +1,65 @@
+n_samples: 1000
+seed: 42
+# Physics constants
+cp_water_j_per_kgk: 4180
+delta_t_k: 30
+design_full_load_hours: 2000  # used if you don't have hourly mdot/energy yet
+# Economics
+discount_rate: 0.06     # real
+lifetime_years: 25
+pump_efficiency: 0.75   # fraction
+elec_price_eur_per_kwh: 0.22
+grid_co2_kg_per_kwh: 0.35
+# Capex model (very simple; price per meter by inner diameter band)
+capex_per_m_eur:
+  default: 450
+  lt_0_100mm: 300
+  lt_0_200mm: 500
+  gte_0_200mm: 800
+# Opex fractions (of capex) and fixed €/MWh for O&M beyond pumping
+opex_fraction_of_capex: 0.02
+om_fixed_eur_per_mwh: 4.0
+# Annual heat fallback if LFA aggregation fails (MWh/yr)
+annual_heat_mwh_fallback: 10000
+# Hydraulic integration settings
+hydraulic_integration:
+  enabled: true
+  use_actual_pump_power: true
+  use_thermal_losses: true
+  pump_efficiency: 0.75
+  thermal_loss_factor: 1.0
+  water_density_kg_m3: 977.8  # Water density at 70°C
+  ground_temperature_c: 10.0  # Ground temperature for thermal efficiency
+
+# CHA input validation settings
+cha_input_validation:
+  schema_path: "schemas/cha_output.schema.json"
+  validate_before_processing: true
+  fail_on_validation_error: true
+  validate_data_ranges: true
+  validate_pipe_categories: true
+  required_columns:
+    - "length_m"
+    - "d_inner_m"
+    - "v_ms"
+    - "dp_bar"
+    - "q_loss_Wm"
+    - "mdot_kg_s"
+    - "t_seg_c"
+    - "pipe_category"
+
+# Enhanced economic analysis settings
+economic_analysis:
+  include_thermal_losses: true
+  include_hydraulic_kpis: true
+  thermal_loss_cost_eur_per_mwh: 0.15  # Cost of thermal losses
+  pump_maintenance_factor: 0.05  # Annual maintenance as fraction of pump cost
+  insulation_cost_eur_per_m: 25.0  # Cost of pipe insulation
+
+# Paths (let code use these as defaults)
+paths:
+  cha_segments: processed/cha/segments.csv
+  dha_feeders: processed/dha/feeder_loads.csv
+  lfa_dir: processed/lfa
+  out_mc: eval/te/mc.parquet
+  out_summary: eval/te/summary.csv

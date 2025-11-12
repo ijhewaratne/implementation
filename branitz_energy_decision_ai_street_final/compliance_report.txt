@@ -1,0 +1,40 @@
+================================================================================
+CHA SIMULATION COMPLIANCE REPORT
+================================================================================
+Generated: 2025-09-24 16:15:54
+Output Directory: test_cha_outputs
+
+EXECUTIVE SUMMARY
+----------------------------------------
+Total Files Validated: 1
+Valid Files: 1
+Invalid Files: 0
+Error Files: 0
+Success Rate: 100.0%
+Total Violations: 0
+
+STANDARDS COMPLIANCE
+----------------------------------------
+EN_13941:
+  Pass: 1 (100.0%)
+  Fail: 0
+  Warning: 0
+DIN_1988:
+  Pass: 1 (100.0%)
+  Fail: 0
+  Warning: 0
+VDI_2067:
+  Pass: 1 (100.0%)
+  Fail: 0
+  Warning: 0
+
+FILE-BY-FILE RESULTS
+----------------------------------------
+cha_output_example.json:
+  Status: VALID
+  Violations: 0
+
+RECOMMENDATIONS
+----------------------------------------
+
+================================================================================
