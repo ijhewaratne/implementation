@@ -1,0 +1,260 @@
+# Pipe Catalog Mapping Configuration
+# This file defines keywords and patterns for extracting pipe catalog data from Excel files
+
+# Column mapping keywords for pipe specifications
+columns:
+  # Nominal diameter (DN) - primary identifier
+  dn:
+    keywords:
+      - "dn"
+      - "durchmesser"
+      - "durchmesser_nennweite"
+      - "nominal_diameter"
+      - "pipe_size"
+      - "rohrgröße"
+      - "nennweite"
+    patterns:
+      - "DN\\s*\\d+"
+      - "\\d+\\s*DN"
+  
+  # Inner diameter
+  d_inner_m:
+    keywords:
+      - "d_inner"
+      - "d_innen"
+      - "innendurchmesser"
+      - "inner_diameter"
+      - "di"
+      - "durchmesser_innen"
+      - "innen"
+    patterns:
+      - "d_i\\s*[=:]\\s*\\d+"
+      - "inner.*diameter"
+  
+  # Outer diameter
+  d_outer_m:
+    keywords:
+      - "d_outer"
+      - "d_außen"
+      - "aussendurchmesser"
+      - "outer_diameter"
+      - "da"
+      - "durchmesser_außen"
+      - "außen"
+    patterns:
+      - "d_a\\s*[=:]\\s*\\d+"
+      - "outer.*diameter"
+  
+  # Wall thickness
+  wall_thickness_mm:
+    keywords:
+      - "wall_thickness"
+      - "wandstärke"
+      - "s"
+      - "thickness"
+      - "wanddicke"
+      - "stärke"
+    patterns:
+      - "s\\s*[=:]\\s*\\d+"
+      - "wall.*thickness"
+  
+  # Heat loss per meter (W/m)
+  w_loss_w_per_m:
+    keywords:
+      - "w_loss"
+      - "wärmeverlust"
+      - "heat_loss"
+      - "verlust"
+      - "w_per_m"
+      - "wärmeverlust_pro_m"
+      - "wärmeverluste"
+      - "leitungen"
+    patterns:
+      - "wärmeverlust.*pro.*m"
+      - "heat.*loss.*per.*m"
+      - "\\d+\\s*w/m"
+  
+  # Thermal conductivity (W/mK)
+  u_wpermk:
+    keywords:
+      - "u_value"
+      - "u_wert"
+      - "thermal_conductivity"
+      - "wärmeleitfähigkeit"
+      - "lambda"
+      - "u"
+      - "wärmeleit"
+    patterns:
+      - "u.*wert"
+      - "thermal.*conductivity"
+      - "\\d+\\.\\d+\\s*w/mk"
+  
+  # Cost per meter (€/m)
+  cost_eur_per_m:
+    keywords:
+      - "cost"
+      - "kosten"
+      - "preis"
+      - "eur_per_m"
+      - "€/m"
+      - "euro_per_meter"
+      - "kosten_pro_m"
+      - "€2023"
+      - "investitionskosten"
+    patterns:
+      - "\\d+\\s*€/m"
+      - "\\d+\\s*eur/m"
+      - "kosten.*pro.*m"
+  
+  # Material
+  material:
+    keywords:
+      - "material"
+      - "werkstoff"
+      - "stoff"
+      - "pipe_material"
+      - "rohr"
+    patterns:
+      - "stahl"
+      - "kunststoff"
+      - "plastic"
+      - "steel"
+  
+  # Insulation type
+  insulation_type:
+    keywords:
+      - "insulation"
+      - "dämmung"
+      - "isolierung"
+      - "insulation_type"
+      - "dämm"
+    patterns:
+      - "standard"
+      - "mineralwolle"
+      - "mineral_wool"
+      - "polymer"
+  
+  # Maximum pressure
+  max_pressure_bar:
+    keywords:
+      - "max_pressure"
+      - "max_druck"
+      - "pn"
+      - "druck"
+      - "pressure"
+      - "druckstufe"
+    patterns:
+      - "pn\\s*\\d+"
+      - "\\d+\\s*bar"
+  
+  # Maximum temperature
+  max_temperature_c:
+    keywords:
+      - "max_temperature"
+      - "max_temperatur"
+      - "t_max"
+      - "temperatur"
+      - "temperature"
+      - "temp"
+    patterns:
+      - "t_max\\s*[=:]\\s*\\d+"
+      - "\\d+\\s*°c"
+      - "\\d+\\s*celsius"
+
+# Likely sheet names containing pipe catalog data
+sheet_names:
+  # German sheet names
+  - "Rohre"
+  - "Leitungen"
+  - "Fernwärmeleitungen"
+  - "Wärmenetze"
+  - "Verteilungsnetze"
+  - "Transportleitungen"
+  - "Rohrkatalog"
+  - "Leitungskatalog"
+  - "Pipe_Catalog"
+  - "Pipe_Data"
+  
+  # English sheet names
+  - "Pipes"
+  - "Pipelines"
+  - "District_Heating"
+  - "Heat_Networks"
+  - "Distribution_Networks"
+  - "Transport_Lines"
+  - "Pipe_Catalog"
+  - "Pipe_Data"
+  
+  # Generic patterns
+  - "*rohr*"
+  - "*leitung*"
+  - "*pipe*"
+  - "*catalog*"
+  - "*data*"
+  - "Tab *"
+
+# Data processing settings
+processing:
+  # Number formats
+  number_formats:
+    decimal_separator: ","  # German format
+    thousands_separator: "."
+    currency_symbols: ["€", "EUR", "euro"]
+  
+  # Unit conversions
+  unit_conversions:
+    # Diameter conversions (mm to m)
+    mm_to_m: 0.001
+    # Pressure conversions
+    bar_to_pa: 100000
+    # Temperature conversions
+    celsius_to_kelvin: 273.15
+  
+  # Default values for missing data
+  defaults:
+    material: "Stahl"
+    insulation_type: "Standard"
+    thermal_conductivity_w_mk: 0.035
+    max_pressure_bar: 16.0
+    max_temperature_c: 120.0
+  
+  # Validation rules
+  validation:
+    min_diameter_mm: 10
+    max_diameter_mm: 1000
+    min_cost_eur_per_m: 10
+    max_cost_eur_per_m: 10000
+    min_thermal_conductivity: 0.01
+    max_thermal_conductivity: 1.0
+
+# Output schema definition
+output_schema:
+  required_fields:
+    - "dn"
+    - "d_inner_m"
+    - "cost_eur_per_m"
+  
+  optional_fields:
+    - "d_outer_m"
+    - "wall_thickness_mm"
+    - "w_loss_w_per_m"
+    - "u_wpermk"
+    - "material"
+    - "insulation_type"
+    - "max_pressure_bar"
+    - "max_temperature_c"
+    - "sheet"
+  
+  data_types:
+    dn: "int"
+    d_inner_m: "float"
+    d_outer_m: "float"
+    wall_thickness_mm: "float"
+    w_loss_w_per_m: "float"
+    u_wpermk: "float"
+    cost_eur_per_m: "float"
+    material: "str"
+    insulation_type: "str"
+    max_pressure_bar: "float"
+    max_temperature_c: "float"
+    sheet: "str"

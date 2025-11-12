@@ -1,0 +1,26 @@
+# Baseline physics toggles
+roughness_k_mm: 0.10          # pipe roughness, mm
+soil_temp_c: 10               # ground temperature (for heat loss)
+insulation_u_w_per_mk: 0.035  # linear heat loss U (W/m·K)
+deltaT_target_K: 30           # network ΔT target (used for loss sensitivity)
+
+# Parameter sweeps (values added around baseline)
+sweeps:
+  roughness_k_mm_rel: [-0.10, -0.05, 0.0, 0.05, 0.10]   # ±10%, ±5%, baseline
+  soil_temp_c_abs: [-5, -2, 0, 2, 5]
+  insulation_u_w_per_mk_rel: [-0.10, -0.05, 0.0, 0.05, 0.10]
+  deltaT_target_K_abs: [-5, -2, 0, 2, 5]
+
+# Inputs
+segments_csv: processed/cha/segments.csv     # design-hour segments
+network_gpkg: data/processed/network.gpkg    # optional: nodes/mains/branches (for real worst-path)
+source_node_id: 0                            # optional: root/source node id in network graph
+
+# Outputs
+out_csv: eval/apa/sensitivity.csv
+
+# Worst-path options
+exclude_return_only: false
+
+# Performance
+# cache_baseline: true  # Not implemented yet - baseline computed once per run

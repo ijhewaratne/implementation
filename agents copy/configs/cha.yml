@@ -1,0 +1,37 @@
+# Centralized Heating Agent (CHA) Configuration
+
+# Data paths
+streets_path: "data/geojson/strassen_mit_adressenV3.geojson"
+buildings_path: "data/geojson/hausumringe_mit_adressenV3.geojson"
+
+# Plant location (CHP plant in Branitz)
+plant_lon: 14.3453979
+plant_lat: 51.76274
+
+# Network parameters
+max_building_distance_m: 50
+connectivity_fix_distance_m: 100
+
+# Output settings
+output_dir: "processed/cha"
+map_filename: "network_map.html"
+geopackage_filename: "cha.gpkg"
+
+# Temperature and pressure settings
+supply_temperature_c: 70
+return_temperature_c: 40
+supply_pressure_bar: 6.0
+return_pressure_bar: 2.0
+
+# Building attributes (fallback values)
+default_heating_load_kw: 10.0
+default_annual_heat_demand_kwh: 24000
+default_building_type: "residential"
+default_building_area_m2: 120
+
+# Pandapipes simulation settings
+enable_pandapipes_simulation: true
+simulation_output_dir: "eval/cha"
+default_pipe_diameter_m: 0.1
+default_pipe_roughness_mm: 0.1
+default_mass_flow_kg_s: 0.1

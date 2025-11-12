@@ -1,0 +1,24 @@
+scenario_name: "branitz_demo"
+fast: false            # when true, run a subset (e.g., 5 buildings)
+
+# What to run (prefer orchestrator if present)
+use_make_run_branitz: true
+# When true, CAA skips running the pipeline and only performs DoD checks + zips artifacts.
+skip_pipeline: false
+# Artifacts to collect into diagnostics.zip
+artifacts:
+  - processed/kpi/kpi_summary.json
+  - eval/te/summary.csv
+  - eval/te/mc.parquet
+  - processed/cha/segments.csv
+  - eval/cha/hydraulics_check.csv
+  - processed/dha/feeder_loads.csv
+  - eval/dha/violations.csv
+  - eval/apa/sensitivity.csv
+  - MIGRATIONS.md
+  - schemas/kpi_summary.schema.json
+  - scripts/validate_json.py
+  - Makefile
+
+# Where to write the bundle
+out_zip: eval/caa/diagnostics.zip

@@ -1,0 +1,28 @@
+# Schema / identity
+schema_version: "1.0.0"
+scenario_name: "branitz_baseline"
+
+# Inputs
+eaa_summary_csv: eval/te/summary.csv          # from EAA
+cha_segments_csv: processed/cha/segments.csv  # from CHA (design-hour segments)
+dha_feeders_csv: processed/dha/feeder_loads.csv  # from DHA
+lfa_metrics_csv: eval/lfa/metrics.csv         # optional: columns rmse, picp_90
+lfa_glob: processed/lfa/*.json                # optional (to estimate peak heat if needed)
+
+# Pump power computation
+pump_efficiency: 0.70                         # assumed global pump efficiency
+pump_kw_fallback: 25.0                        # kW, used if insufficient data
+
+# DH losses (% of delivered heat) — used if CHA didn't provide enough info
+dh_losses_pct_fallback: 8.0
+deltaT_target_K: 30.0  # design temperature difference for delivered heat calculation
+
+# Decision rules
+decision:
+  hp_feeder_util_limit_pct: 80        # if DHA max utilization > this → prefer DH
+  lcoh_margin_eur_per_mwh: 10         # if one option beats others by ≥ this, favor it
+  co2_margin_kg_per_mwh: 20           # same idea for CO2
+  default_option: "Hybrid"            # fallback if no dominance
+
+# KPI aggregation
+central_stat: "median"                 # use "median" or "mean" from EAA summary

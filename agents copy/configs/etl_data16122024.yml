@@ -1,0 +1,33 @@
+defaults:
+  T_in_C: 20.0
+  air_change_n_per_h: 0.5
+  window_share: 0.15
+  height: 3.0
+  sanierungs_map:
+    unsaniert: 1.00
+    teilsaniert: 0.71
+    vollsaniert: 0.30
+
+buildings_columns:
+  id: building_id
+  function: function
+  floor_area: floor_area_m2
+  wall_area: wall_area_m2
+  roof_area: roof_area_m2
+  volume: volume_m3
+  height: height_m
+  U_wall: U_Aussenwand
+  U_roof: U_Dach
+  U_floor: U_Boden
+  U_window: U_Fenster
+  window_share: fensterflaechenanteil
+  T_in: T_in_C
+  n: air_change_n_per_h
+  sanierungszustand: sanierungszustand
+  year: year
+
+weather_columns:
+  timestamp: timestamp
+  T_out: T_out
+  RH: RH
+  GHI: GHI

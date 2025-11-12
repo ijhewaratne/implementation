@@ -1,0 +1,21 @@
+# Which scenario this report represents
+scenario_name: "branitz_demo"
+
+# Inputs (REQUIRED where marked)
+kpi_json: processed/kpi/kpi_summary.json      # REQUIRED
+eaa_summary_csv: eval/te/summary.csv          # REQUIRED
+
+# Optional, but often shown as small tables/links
+cha_segments_csv: processed/cha/segments.csv
+dha_feeders_csv: processed/dha/feeder_loads.csv
+lfa_metrics_csv: eval/lfa/metrics.csv         # optional row: rmse, picp_90
+
+# Extra artifacts to list/link in the report (all must exist → else fail)
+artifacts:
+  - eval/te/mc.parquet
+  - eval/cha/hydraulics_check.csv
+  - eval/dha/violations.csv
+
+# Template + Output
+template_md: templates/report.md.j2
+out_html: docs/branitz_recommendation.html
