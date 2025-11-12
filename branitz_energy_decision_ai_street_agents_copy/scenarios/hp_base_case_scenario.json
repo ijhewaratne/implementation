@@ -1,0 +1,39 @@
+{
+  "name": "hp_base_case",
+  "description": "Heat pumps on existing LV grid (no reinforcement)",
+  "type": "HP",
+  "params": {
+    "cop": 2.8,
+    "hp_thermal_kw": 6.0,
+    "hp_three_phase": true,
+    "grid_reinforcement": false,
+    "load_profile_name": "winter_werktag_abendspitze"
+  },
+  "weather": {
+    "file": "data/csv/TRY2015_517475143730_Wint.dat"
+  },
+  "network_file": "results/branitz_network.graphml",
+  "building_file": "data/json/output_branitzer_siedlungV11.json",
+  "load_profile_file": "data/json/gebaeude_lastphasenV2.json",
+  "nodes_file": "data/json/branitzer_siedlung_ns_v3_ohne_UW.json"
+}
+{
+  "name": "hp_base_case",
+  "description": "Heat pumps without grid reinforcement (single-phase baseline)",
+  "type": "HP",
+  "params": {
+    "hp_cop": 2.4,
+    "hp_thermal_kw": 6.0,
+    "hp_three_phase": true,
+    "grid_reinforcement": false,
+    "load_profile_name": "winter_werktag_abendspitze"
+  },
+  "weather": {
+    "file": "data/csv/TRY2015_517475143730_Wint.dat"
+  },
+  "network_file": "results/branitz_network.graphml",
+  "building_file": "data/json/output_branitzer_siedlungV11.json",
+  "load_profile_file": "data/json/gebaeude_lastphasenV2.json",
+  "nodes_file": "data/json/branitzer_siedlung_ns_v3_ohne_UW.json"
+}
+
