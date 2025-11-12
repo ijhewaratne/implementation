@@ -1,0 +1,2 @@
+total_buildings,successful_connections,failed_connections,total_main_pipe_length,total_service_pipe_length,total_network_length,avg_main_pipe_length,avg_service_pipe_length,max_main_pipe_length,min_main_pipe_length,success_rate
+14,14,0,26332.410187850528,208.0132977147734,26540.4234855653,1880.8864419893237,14.858092693912385,2170.395939243728,1797.827654308459,100.0

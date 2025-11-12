@@ -1,0 +1,5 @@
+building_id,building_x,building_y,connection_x,connection_y,distance_to_street,street_segment_id,street_name,heating_load_kw,pipe_type,temperature_c,flow_direction,follows_street,connected_to_supply_pipe,connected_to_return_pipe
+0,455516.74832821277,5733684.9905701205,455544.8249508856,5733667.750787734,32.94703078329161,410,Street_410,10.0,supply_service,70,main_to_building,True,True,True
+0,455516.74832821277,5733684.9905701205,455544.8249508856,5733667.750787734,32.94703078329161,410,Street_410,10.0,return_service,40,building_to_main,True,True,True
+1,455517.0420223244,5733697.847635682,455550.63841666136,5733677.218568786,39.42430866153415,410,Street_410,10.0,supply_service,70,main_to_building,True,True,True
+1,455517.0420223244,5733697.847635682,455550.63841666136,5733677.218568786,39.42430866153415,410,Street_410,10.0,return_service,40,building_to_main,True,True,True

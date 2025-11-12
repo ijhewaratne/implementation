@@ -1,0 +1,5 @@
+start_node,end_node,length_m,street_id,street_name,highway_type,pipe_type,building_served,temperature_c,flow_direction,follows_street
+POINT (455696.0094877049 5733330.249593952),"(455696.0094877049, 5733330.249593952)",0.0,plant_connection,Plant Connection,service,supply,0,70,plant_to_building,True
+"(455696.0094877049, 5733330.249593952)","(455622.03338414856, 5733379.3950209)",88.81293198253526,898,Street_898,residential,supply,0,70,plant_to_building,True
+"(455622.03338414856, 5733379.3950209)","(455569.90445706557, 5733424.133343258)",68.69455965504238,898,Street_898,residential,supply,0,70,plant_to_building,True
+"(455569.90445706557, 5733424.133343258)","(455471.0279336721, 5733509.003839761)",130.3056716150613,898,Street_898,residential,supply,0,70,plant_to_building,True
