@@ -1,0 +1,120 @@
+# Simulation Configuration
+# Physical and technical parameters for simulations
+
+# District Heating Configuration
+district_heating:
+  # Temperature settings
+  supply_temp_c: 85.0           # Supply temperature (°C)
+  return_temp_c: 55.0           # Return temperature (°C)
+  
+  # Network parameters
+  network:
+    pipe_roughness_mm: 0.1      # Pipe roughness (mm) for steel pipes
+    default_diameter_m: 0.065    # Default pipe diameter (m) - DN65
+    insulation_thickness_mm: 30  # Pipe insulation thickness (mm)
+    ambient_temp_c: 10           # Ambient ground temperature (°C)
+    
+    # Topology options
+    topology: "radial"           # "radial", "ring", or "meshed"
+    min_pipe_diameter_m: 0.025   # Minimum pipe diameter (DN25)
+    max_pipe_diameter_m: 0.150   # Maximum pipe diameter (DN150)
+  
+  # Plant/source parameters
+  plant:
+    supply_pressure_bar: 6.0     # Supply pressure at plant (bar)
+    min_pressure_bar: 2.0        # Minimum required pressure (bar)
+    pump_efficiency: 0.75        # Pump efficiency (0-1)
+  
+  # Simulation solver settings
+  simulation:
+    solver: "pipeflow"           # pandapipes solver
+    mode: "all"                  # "hydraulic", "thermal", or "all"
+    max_iterations: 100          # Maximum solver iterations
+    tolerance: 1.0e-6            # Convergence tolerance
+    init_method: "flat"          # Initialization: "flat" or "previous"
+
+# Heat Pump Electrical Configuration
+heat_pump:
+  # Heat pump specifications
+  hp_thermal_kw: 6.0             # Thermal power output per building (kW)
+  hp_cop: 2.8                    # Coefficient of Performance (typical winter)
+  hp_three_phase: true           # true = 3-phase balanced, false = single-phase
+  
+  # Grid voltage levels
+  grid:
+    mv_voltage_kv: 20.0          # Medium voltage (kV)
+    lv_voltage_kv: 0.4           # Low voltage (kV)
+    transformer_mva: 0.63        # Standard transformer capacity (MVA)
+    transformer_type: "Dyn"      # Transformer vector group
+    
+  # Cable specifications
+  cables:
+    default_type: "NAYY 4x150 SE"  # Standard LV cable type
+    max_length_m: 500            # Maximum cable length (m)
+    underground: true            # Underground vs overhead
+    
+  # Operational limits
+  limits:
+    voltage_min_pu: 0.90         # Minimum voltage (per-unit)
+    voltage_max_pu: 1.10         # Maximum voltage (per-unit)
+    line_loading_max_pct: 100.0  # Maximum line loading (%)
+    transformer_loading_max_pct: 100.0  # Maximum transformer loading (%)
+  
+  # Simulation solver settings
+  simulation:
+    solver: "nr"                 # Newton-Raphson
+    use_3ph: true                # Use 3-phase solver (runpp_3ph)
+    max_iterations: 100          # Maximum solver iterations
+    tolerance: 1.0e-6            # Convergence tolerance
+    init: "auto"                 # Initialization method
+
+# Performance Settings
+performance:
+  # Caching
+  cache_directory: "simulation_cache"
+  max_cache_size_mb: 1000       # Maximum cache size (MB)
+  
+  # Parallel execution
+  parallel:
+    max_workers: 4               # Maximum parallel workers
+    chunk_size: 10               # Buildings per chunk
+    
+  # Timeouts
+  timeouts:
+    network_creation_s: 60       # Network creation timeout
+    simulation_s: 300            # Simulation timeout
+    total_s: 600                 # Total operation timeout
+
+# Validation Rules
+validation:
+  # General
+  min_buildings: 2               # Minimum buildings for simulation
+  max_buildings: 500             # Maximum buildings (performance limit)
+  
+  # District Heating specific
+  dh:
+    min_heat_demand_kw: 1.0      # Minimum building heat demand (kW)
+    max_heat_demand_kw: 500.0    # Maximum building heat demand (kW)
+    max_pipe_length_m: 1000      # Maximum single pipe length (m)
+    min_pipe_length_m: 1.0       # Minimum pipe length (m)
+    
+  # Heat Pump specific
+  hp:
+    min_base_load_kw: 0.5        # Minimum base electrical load (kW)
+    max_base_load_kw: 50.0       # Maximum base load (kW)
+    max_total_load_mw: 2.0       # Maximum total load for LV network (MW)
+    max_hp_size_kw: 20.0         # Maximum HP thermal power (kW)
+
+# Export Settings
+export:
+  formats:
+    - geojson                    # Export GeoJSON
+    - json                       # Export JSON
+  
+  geojson:
+    precision: 6                 # Coordinate precision (decimal places)
+    include_results: true        # Include simulation results in properties
+    
+  save_networks: true            # Save network objects (.pkl)
+  save_summaries: true           # Save text summaries (.txt)
+

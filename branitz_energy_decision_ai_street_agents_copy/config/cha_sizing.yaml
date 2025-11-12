@@ -1,0 +1,7 @@
+fallback:
+  default_diameter_mm: 40
+  default_nominal: "DN40"
+  source_label: "CHA_FALLBACK"
+  note: "CHA sizing unavailable; default diameter applied"
+  violation_standard: "CHA"
+

@@ -1,0 +1,391 @@
+# ============================================================================
+# Visualization Configuration
+# ============================================================================
+# 
+# Configuration for color-coded cascading network visualizations.
+# 
+# This file controls:
+# - Visualization feature toggles
+# - Output settings (directories, formats, resolution)
+# - Static map settings (PNG with OSM overlay)
+# - Interactive map settings (Folium/Leaflet.js)
+# - Dashboard settings (12-panel summaries, comparisons)
+# - Color schemes and gradients
+# - Performance optimization
+# 
+# ============================================================================
+
+visualization:
+  # ----------------------------------------------------------------------------
+  # Feature Toggles
+  # ----------------------------------------------------------------------------
+  
+  enabled: true                              # Master switch for all visualizations
+  auto_generate_on_simulation: false         # Auto-create visualizations after each simulation
+  
+  # Individual feature toggles
+  static_maps_enabled: true                  # Enable static PNG maps
+  interactive_maps_enabled: true             # Enable interactive HTML maps
+  dashboards_enabled: true                   # Enable dashboard generation
+  
+  # ----------------------------------------------------------------------------
+  # Output Settings
+  # ----------------------------------------------------------------------------
+  
+  output:
+    base_dir: "results_test/visualizations"  # Base output directory
+    static_dir: "results_test/visualizations/static"
+    interactive_dir: "results_test/visualizations/interactive"
+    dashboard_dir: "results_test/visualizations/dashboards"
+    
+    # File naming convention
+    # {scenario_name}_{network_type}_{visualization_type}.{ext}
+    naming_convention: "{scenario}_{type}_{viz}.{ext}"
+  
+  # ----------------------------------------------------------------------------
+  # Static Map Settings (PNG with Matplotlib)
+  # ----------------------------------------------------------------------------
+  
+  static:
+    enabled: true
+    
+    # Image settings
+    dpi: 300                                 # Resolution (300 for print, 150 for screen)
+    format: "png"                            # Output format (png, pdf, svg)
+    figsize: [15, 12]                        # Figure size in inches [width, height]
+    
+    # Street map overlay settings
+    include_street_map: true                 # Add OSM basemap overlay
+    street_map_provider: "OpenStreetMap.Mapnik"  # OSM provider
+    # Alternatives: CartoDB.Positron, CartoDB.DarkMatter, Stamen.Terrain
+    street_map_zoom: 16                      # Zoom level for basemap
+    
+    # Map bounds padding
+    bounds_padding_m: 100                    # Padding around network (meters)
+    
+    # Style settings
+    grid: true                               # Show grid
+    grid_alpha: 0.3                          # Grid transparency
+    legend_position: "upper right"           # Legend location
+    legend_fontsize: 11                      # Legend font size
+    title_fontsize: 16                       # Title font size
+    axis_fontsize: 12                        # Axis label font size
+  
+  # ----------------------------------------------------------------------------
+  # Interactive Map Settings (HTML with Folium/Leaflet.js)
+  # ----------------------------------------------------------------------------
+  
+  interactive:
+    enabled: true
+    
+    # Map settings
+    zoom_start: 16                           # Initial zoom level
+    tiles: "OpenStreetMap"                   # Default tile layer
+    # Alternatives: CartoDB.Positron, CartoDB.DarkMatter, Stamen.Terrain
+    
+    # Additional tile layers (user can switch between them)
+    additional_tiles:
+      - "CartoDB.Positron"
+      - "CartoDB.DarkMatter"
+    
+    # Feature groups (layers user can toggle)
+    enable_layer_control: true               # Enable layer switching
+    
+    # Interactive elements
+    include_statistics_panel: true           # Show statistics panel
+    statistics_panel_position: "topright"    # Position: topright, topleft, bottomright, bottomleft
+    
+    include_performance_dashboard: true      # Show performance dashboard
+    performance_panel_position: "bottomleft"
+    
+    include_legend: true                     # Show custom legend
+    legend_position: "bottomright"
+    
+    # Popup and tooltip settings
+    popup_max_width: 400                     # Maximum popup width (pixels)
+    tooltip_enabled: true                    # Enable hover tooltips
+    
+    # Marker settings
+    junction_radius: 4                       # Junction marker size
+    consumer_radius: 6                       # Consumer marker size
+    
+    # Line settings
+    supply_pipe_weight: 4                    # Supply pipe line width
+    return_pipe_weight: 3                    # Return pipe line width
+    service_pipe_weight: 2                   # Service connection line width
+    
+    supply_pipe_opacity: 0.8                 # Supply pipe transparency
+    return_pipe_opacity: 0.6                 # Return pipe transparency
+    service_pipe_opacity: 0.7                # Service connection transparency
+  
+  # ----------------------------------------------------------------------------
+  # Dashboard Settings (12-panel Summaries, Comparisons)
+  # ----------------------------------------------------------------------------
+  
+  dashboard:
+    enabled: true
+    
+    # Summary dashboard settings
+    summary_panels: 12                       # Number of panels (3×4 grid)
+    summary_figsize: [24, 18]                # Figure size in inches
+    summary_dpi: 300                         # Resolution
+    
+    # Comparison dashboard settings
+    comparison_panels: 6                     # Number of panels (2×3 grid)
+    comparison_figsize: [18, 12]             # Figure size in inches
+    comparison_dpi: 300                      # Resolution
+    
+    # Style settings
+    seaborn_style: "default"                 # Matplotlib style
+    seaborn_palette: "husl"                  # Color palette
+    
+    # Panel settings
+    panel_title_fontsize: 12                 # Panel title font size
+    panel_title_weight: "bold"               # Panel title weight
+    main_title_fontsize: 20                  # Main title font size (summary)
+    comparison_title_fontsize: 18            # Main title font size (comparison)
+    
+    # Text box settings
+    textbox_fontsize: 10                     # Text box font size
+    textbox_family: "monospace"              # Font family for specs
+    
+    # Performance settings
+    include_timestamp: true                  # Add generation timestamp
+    include_logo: false                      # Add organization logo (not implemented)
+  
+  # ----------------------------------------------------------------------------
+  # HTML Dashboard Settings (Comprehensive Web Pages)
+  # ----------------------------------------------------------------------------
+  
+  html_dashboard:
+    enabled: true                            # Enable HTML dashboard generation
+    output_dir: "results_test/visualizations/html_dashboards"
+    
+    # Styling
+    primary_color: "#3498db"                 # Primary theme color
+    success_color: "#27ae60"                 # Success indicator color
+    warning_color: "#f39c12"                 # Warning indicator color
+    error_color: "#e74c3c"                   # Error indicator color
+    dark_color: "#2c3e50"                    # Dark text color
+    light_color: "#ecf0f1"                   # Light background color
+    border_color: "#bdc3c7"                  # Border color
+    gray_color: "#7f8c8d"                    # Gray text color
+    
+    # Layout
+    max_width: "1400px"                      # Maximum container width
+    grid_columns: "repeat(auto-fit, minmax(250px, 1fr))"  # Metric grid
+    
+    # Embedding
+    embed_maps: true                         # Embed interactive maps via iframe
+    embed_charts: true                       # Embed charts/images
+    base64_encode_images: true               # Base64 encode images (vs file reference)
+    
+    # Features
+    include_javascript: true                 # Include JavaScript for interactivity
+    responsive_design: true                  # Enable responsive design
+    mobile_breakpoint: "768px"               # Mobile breakpoint
+    
+    # Iframe settings
+    map_iframe_height: "600px"               # Height of embedded map iframe
+    map_iframe_width: "100%"                 # Width of embedded map iframe
+    
+    # Performance
+    lazy_load_images: false                  # Lazy load images (not implemented)
+    compress_html: false                     # Minify HTML (not implemented)
+  
+  # ----------------------------------------------------------------------------
+  # Color Settings
+  # ----------------------------------------------------------------------------
+  
+  colors:
+    # DH Network (Temperature-based)
+    dh_supply: "#DC143C"                     # Crimson (hot)
+    dh_return: "#4682B4"                     # SteelBlue (cold)
+    dh_supply_junction: "#DC143C"            # Crimson
+    dh_return_junction: "#4682B4"            # SteelBlue
+    heat_consumer: "#FF8C00"                 # DarkOrange
+    chp_plant: "#228B22"                     # ForestGreen
+    service_connection: "#FFA500"            # Orange
+    
+    # HP Network (Voltage-based)
+    lv_bus: "#4169E1"                        # RoyalBlue
+    mv_bus: "#8B008B"                        # DarkMagenta
+    transformer: "#FFD700"                   # Gold
+    hp_load: "#FF4500"                       # OrangeRed
+    substation: "#32CD32"                    # LimeGreen
+    power_line: "#696969"                    # DimGray
+    
+    # Infrastructure
+    street: "#696969"                        # DimGray
+    building: "#D3D3D3"                      # LightGray
+    building_outline: "#000000"              # Black
+    
+    # Status Colors (Traffic Light System)
+    normal: "#2ECC71"                        # Green
+    warning: "#F39C12"                       # Orange
+    critical: "#E74C3C"                      # Red
+    excellent: "#27AE60"                     # DarkGreen
+    info: "#3498DB"                          # Blue
+  
+  # ----------------------------------------------------------------------------
+  # Temperature Gradient Settings (DH)
+  # ----------------------------------------------------------------------------
+  
+  temperature:
+    colormap: "hot"                          # Matplotlib colormap
+    # Alternatives: inferno, plasma, coolwarm
+    
+    min_temp_c: 40                           # Minimum temperature for normalization
+    max_temp_c: 90                           # Maximum temperature for normalization
+    
+    supply_temp_range: [70, 90]              # Expected supply temp range (°C)
+    return_temp_range: [40, 60]              # Expected return temp range (°C)
+    
+    # Gradient visualization
+    show_gradient: true                      # Enable cascading gradient
+    gradient_segments: 10                    # Number of color segments
+  
+  # ----------------------------------------------------------------------------
+  # Pressure Gradient Settings (DH)
+  # ----------------------------------------------------------------------------
+  
+  pressure:
+    colormap: "RdYlGn"                       # Red (low) -> Yellow -> Green (high)
+    # Alternatives: viridis, plasma
+    
+    min_pressure_bar: 0                      # Minimum pressure for normalization
+    max_pressure_bar: 5                      # Maximum pressure for normalization
+    
+    acceptable_range: [3.0, 6.0]             # Acceptable pressure range (bar)
+    warning_threshold: 0.5                   # Warning level for pressure drop (bar)
+    critical_threshold: 1.0                  # Critical level for pressure drop (bar)
+  
+  # ----------------------------------------------------------------------------
+  # Voltage Gradient Settings (HP)
+  # ----------------------------------------------------------------------------
+  
+  voltage:
+    colormap: "RdYlGn"                       # Red (violation) -> Green (normal)
+    # Alternatives: coolwarm
+    
+    min_voltage_pu: 0.9                      # Minimum voltage for normalization
+    max_voltage_pu: 1.1                      # Maximum voltage for normalization
+    
+    # Acceptable ranges (EN 50160 standard)
+    acceptable_min: 0.95                     # Lower acceptable limit (pu)
+    acceptable_max: 1.05                     # Upper acceptable limit (pu)
+    
+    warning_min: 0.92                        # Warning lower limit (pu)
+    warning_max: 1.08                        # Warning upper limit (pu)
+    
+    violation_min: 0.90                      # Violation lower limit (pu)
+    violation_max: 1.10                      # Violation upper limit (pu)
+  
+  # ----------------------------------------------------------------------------
+  # Loading Gradient Settings (HP)
+  # ----------------------------------------------------------------------------
+  
+  loading:
+    colormap: "RdYlGn_r"                     # Red (overload) -> Green (light load)
+    
+    warning_threshold: 80                    # Warning level (%)
+    critical_threshold: 100                  # Critical level (%)
+    
+    # Transformer specific
+    transformer_warning: 80                  # Transformer warning (%)
+    transformer_max: 100                     # Transformer max capacity (%)
+  
+  # ----------------------------------------------------------------------------
+  # Heat Demand Gradient Settings
+  # ----------------------------------------------------------------------------
+  
+  heat_demand:
+    colormap: "YlOrRd"                       # Yellow -> Orange -> Red
+    # Alternatives: Reds, OrRd
+    
+    min_demand_kw: 0                         # Minimum for normalization
+    max_demand_kw: 100                       # Maximum for normalization
+    
+    # Categorization thresholds
+    low_demand: 20                           # Low demand threshold (kW)
+    medium_demand: 50                        # Medium demand threshold (kW)
+    high_demand: 100                         # High demand threshold (kW)
+  
+  # ----------------------------------------------------------------------------
+  # Service Connection Gradient Settings
+  # ----------------------------------------------------------------------------
+  
+  service_length:
+    colormap: "RdYlGn_r"                     # Red (long) -> Green (short)
+    
+    max_length_m: 100                        # Maximum length for normalization
+    
+    # Efficiency thresholds
+    short: 30                                # Short connection (m) - efficient
+    medium: 60                               # Medium connection (m)
+    long: 100                                # Long connection (m) - less efficient
+  
+  # ----------------------------------------------------------------------------
+  # Performance Optimization
+  # ----------------------------------------------------------------------------
+  
+  performance:
+    # Network simplification for large networks
+    simplify_threshold: 200                  # Simplify if > 200 buildings
+    simplification_tolerance: 10             # Simplification tolerance (meters)
+    
+    # Rendering optimization
+    max_markers: 500                         # Maximum markers for interactive maps
+    max_lines: 1000                          # Maximum lines for interactive maps
+    
+    # Caching
+    cache_colormaps: true                    # Cache colormap calculations
+    cache_geodata: true                      # Cache processed geodata
+  
+  # ----------------------------------------------------------------------------
+  # Dependencies
+  # ----------------------------------------------------------------------------
+  
+  dependencies:
+    # Required dependencies
+    geopandas_required: true
+    matplotlib_required: true
+    folium_required: true
+    
+    # Optional dependencies
+    contextily_required: false               # Optional for OSM basemap
+    seaborn_required: true                   # For enhanced styling
+    branca_required: true                    # For Folium utilities
+    
+    # Fallback behavior if optional dependencies missing
+    fallback_mode: "graceful"                # Options: "graceful", "strict", "disable"
+    # graceful: Continue without optional features
+    # strict: Raise error if any dependency missing
+    # disable: Disable visualizations entirely
+  
+  # ----------------------------------------------------------------------------
+  # Advanced Settings
+  # ----------------------------------------------------------------------------
+  
+  advanced:
+    # Coordinate systems
+    default_crs: "EPSG:25833"                # Default CRS for Germany (UTM 33N)
+    web_mercator_crs: "EPSG:3857"            # Web Mercator for OSM
+    wgs84_crs: "EPSG:4326"                   # WGS84 for lat/lon
+    
+    # Gradient resolution
+    gradient_resolution: 100                 # Number of gradient steps
+    
+    # Animation settings (future)
+    enable_animations: false                 # Enable animated visualizations
+    animation_fps: 30                        # Frames per second
+    animation_duration_s: 10                 # Animation duration (seconds)
+    
+    # Export formats (future)
+    export_formats: ["png", "html"]          # Supported export formats
+    # Future: pdf, svg, gif, mp4
+    
+    # Mobile optimization
+    mobile_responsive: true                  # Make HTML maps mobile-friendly
+    mobile_breakpoint: 768                   # Mobile breakpoint (pixels)
+

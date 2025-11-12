@@ -1,0 +1,45 @@
+# Feature Flags Configuration
+# Controls which features are enabled/disabled for gradual rollout
+
+features:
+  # Master switch for real simulations
+  use_real_simulations: true   # Enable physics-based simulations
+  
+  # Individual simulation type toggles (allows staged rollout)
+  use_real_dh: true              # Enable real District Heating simulations
+  use_real_hp: true              # Enable real Heat Pump simulations
+  
+  # Performance features
+  enable_caching: true           # Cache simulation results
+  cache_ttl_hours: 24            # Cache validity period (hours)
+  
+  # User experience features
+  enable_progress_tracking: true  # Show progress bars during simulation
+  enable_parallel_execution: false  # Run multiple streets in parallel (experimental)
+  
+  # Visualization features (Phase 6 & 7)
+  enable_visualizations: true     # Enable advanced visualizations
+  auto_generate_visualizations: false  # Auto-create maps after simulation
+  enable_interactive_maps: true   # Enable interactive HTML maps
+  enable_dashboards: true         # Enable PNG dashboard generation
+  enable_html_dashboards: true    # Enable HTML dashboard generation (Phase 7)
+  auto_generate_html_dashboards: false  # Auto-create HTML dashboards after simulation
+  
+  # Error handling
+  fallback_on_error: true        # Use placeholder if simulation fails
+  strict_mode: false             # Fail fast on errors (for testing/development)
+
+# Logging configuration
+logging:
+  level: "INFO"                  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  log_simulations: true          # Log detailed simulation steps
+  log_cache_operations: true     # Log cache hits/misses
+  log_agent_actions: true        # Log agent tool calls
+  log_file: "simulation.log"    # Log file path (null for stdout only)
+
+# Development/testing
+development:
+  enable_profiling: false        # Profile simulation performance
+  save_networks: true            # Save network objects for inspection
+  export_debug_data: false       # Export intermediate results for debugging
+
