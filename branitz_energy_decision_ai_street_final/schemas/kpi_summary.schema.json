@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://branitz.ai/schemas/kpi_summary.schema.json",
+  "title": "KPI Summary",
+  "description": "Contract for end-to-end scenario KPIs",
+  "x-version": "2.0.0",
+  "type": "object",
+  "required": [
+    "project_info",
+    "economic_metrics",
+    "technical_metrics",
+    "recommendation"
+  ],
+  "properties": {
+    "project_info": {
+      "type": "object",
+      "properties": {
+        "scenario_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "created_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        }
+      },
+      "required": ["scenario_name", "created_utc", "version"]
+    },
+    "economic_metrics": {
+      "type": "object",
+      "properties": {
+        "lcoh_eur_per_mwh": {
+          "type": "number",
+          "description": "Levelized Cost of Heat in EUR/MWh"
+        },
+        "npv_eur": {
+          "type": "number",
+          "description": "Net Present Value in EUR"
+        },
+        "capex_eur": {
+          "type": "number",
+          "description": "Capital Expenditure in EUR"
+        },
+        "opex_eur_per_year": {
+          "type": "number",
+          "description": "Annual Operating Expenditure in EUR"
+        },
+        "payback_period_years": {
+          "type": "number",
+          "description": "Payback period in years"
+        }
+      },
+      "required": ["lcoh_eur_per_mwh", "npv_eur"]
+    },
+    "technical_metrics": {
+      "type": "object",
+      "properties": {
+        "dh_losses_pct": {
+          "type": "number",
+          "minimum": 0,
+          "description": "District heating losses in percent"
+        },
+        "pump_kw": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Pump power requirement in kW"
+        },
+        "feeder_max_utilization_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Maximum feeder utilization in percent"
+        },
+        "forecast_rmse": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Forecast RMSE"
+        },
+        "forecast_picp_90": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Forecast PICP at 90% confidence"
+        },
+        "max_velocity_ms": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Maximum fluid velocity in m/s"
+        },
+        "max_pressure_drop_pa_per_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Maximum pressure drop per meter in Pa/m"
+        },
+        "thermal_efficiency": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Thermal efficiency of the network"
+        },
+        "network_length_km": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Total network length in kilometers"
+        },
+        "total_flow_kg_s": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Total mass flow rate in kg/s"
+        },
+        "pump_efficiency": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Pump efficiency as a fraction"
+        },
+        "specific_pump_power_kw_per_kg_s": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Specific pump power in kW per kg/s"
+        },
+        "thermal_losses_kw": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Total thermal losses in kW"
+        },
+        "temperature_drop_k": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Temperature drop across the network in Kelvin"
+        },
+        "thermal_loss_factor": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Thermal loss factor for insulation assessment"
+        }
+      },
+      "required": [
+        "dh_losses_pct", 
+        "pump_kw", 
+        "feeder_max_utilization_pct",
+        "max_velocity_ms",
+        "max_pressure_drop_pa_per_m",
+        "thermal_efficiency",
+        "network_length_km",
+        "total_flow_kg_s",
+        "pump_efficiency",
+        "specific_pump_power_kw_per_kg_s",
+        "thermal_losses_kw",
+        "temperature_drop_k",
+        "thermal_loss_factor"
+      ]
+    },
+    "recommendation": {
+      "type": "object",
+      "properties": {
+        "preferred_scenario": {
+          "type": "string",
+          "enum": ["DH", "HP", "Hybrid", "Inconclusive"],
+          "description": "Recommended heating scenario"
+        },
+        "confidence_level": {
+          "type": "string",
+          "enum": ["high", "medium", "low"],
+          "description": "Confidence level in recommendation"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Explanation of the recommendation"
+        }
+      },
+      "required": ["preferred_scenario", "confidence_level", "rationale"]
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9._/-]+$"
+      },
+      "description": "Source files and data used"
+    }
+  },
+  "additionalProperties": false
+}
