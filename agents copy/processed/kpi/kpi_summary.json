@@ -1,0 +1,22 @@
+{
+  "project_info": {
+    "scenario_name": "test_scenario",
+    "created_utc": "2024-01-01T00:00:00Z",
+    "version": "1.0.0"
+  },
+  "economic_metrics": {
+    "lcoh_eur_per_mwh": 60.0,
+    "npv_eur": 1000000.0
+  },
+  "technical_metrics": {
+    "dh_losses_pct": 8.0,
+    "pump_kw": 25.0,
+    "feeder_max_utilization_pct": 75.0
+  },
+  "recommendation": {
+    "preferred_scenario": "DH",
+    "confidence_level": "medium",
+    "rationale": "Test recommendation"
+  },
+  "sources": ["test_source.csv"]
+}

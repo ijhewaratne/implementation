@@ -1,0 +1,26 @@
+--- a/optimize/diameter_optimizer.py
++++ b/optimize/diameter_optimizer.py
+@@ -360,8 +360,16 @@ class DiameterOptimizer:
+             worst_max_V_dot = 0.0
+             
+             for path_id, path_segments in path_groups.items():
+-                dp_path, max_V_dot = self._eval_path_head(path_segments)
+-                path_stats[path_id] = {
++                # Only process paths that contain supply segments
++                supply_segments = [seg for seg in path_segments if seg.is_supply]
++                if not supply_segments:
++                    continue  # Skip return-only paths
++                
++                # Only evaluate supply segments for path head
++                supply_only_segments = [seg for seg in path_segments if seg.is_supply]
++                dp_path, max_V_dot = self._eval_path_head(supply_only_segments)
++                
++                # Only add to path_stats if there are supply segments and non-zero pressure drop
++                if supply_segments and dp_path > 0:
++                    path_stats[path_id] = {
+                     "dp_Pa": dp_path,
+                     "V_dot_peak_m3s": max_V_dot
+-                }
++                    }
+                 
+                 if dp_path > worst_dp:

@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://branitz.ai/schemas/kpi_summary.schema.json",
+  "title": "KPI Summary",
+  "description": "Contract for end-to-end scenario KPIs",
+  "x-version": "1.0.0",
+  "type": "object",
+  "required": [
+    "project_info",
+    "economic_metrics",
+    "technical_metrics",
+    "recommendation"
+  ],
+  "properties": {
+    "project_info": {
+      "type": "object",
+      "properties": {
+        "scenario_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "created_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        }
+      },
+      "required": ["scenario_name", "created_utc", "version"]
+    },
+    "economic_metrics": {
+      "type": "object",
+      "properties": {
+        "lcoh_eur_per_mwh": {
+          "type": "number",
+          "description": "Levelized Cost of Heat in EUR/MWh"
+        },
+        "npv_eur": {
+          "type": "number",
+          "description": "Net Present Value in EUR"
+        },
+        "capex_eur": {
+          "type": "number",
+          "description": "Capital Expenditure in EUR"
+        },
+        "opex_eur_per_year": {
+          "type": "number",
+          "description": "Annual Operating Expenditure in EUR"
+        },
+        "payback_period_years": {
+          "type": "number",
+          "description": "Payback period in years"
+        }
+      },
+      "required": ["lcoh_eur_per_mwh", "npv_eur"]
+    },
+    "technical_metrics": {
+      "type": "object",
+      "properties": {
+        "dh_losses_pct": {
+          "type": "number",
+          "description": "District heating losses in percent"
+        },
+        "pump_kw": {
+          "type": "number",
+          "description": "Pump power requirement in kW"
+        },
+        "feeder_max_utilization_pct": {
+          "type": "number",
+          "description": "Maximum feeder utilization in percent"
+        },
+        "forecast_rmse": {
+          "type": "number",
+          "description": "Forecast RMSE"
+        },
+        "forecast_picp_90": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Forecast PICP at 90% confidence"
+        }
+      },
+      "required": ["dh_losses_pct", "pump_kw", "feeder_max_utilization_pct"]
+    },
+    "recommendation": {
+      "type": "object",
+      "properties": {
+        "preferred_scenario": {
+          "type": "string",
+          "enum": ["DH", "HP", "Hybrid", "Inconclusive"],
+          "description": "Recommended heating scenario"
+        },
+        "confidence_level": {
+          "type": "string",
+          "enum": ["high", "medium", "low"],
+          "description": "Confidence level in recommendation"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Explanation of the recommendation"
+        }
+      },
+      "required": ["preferred_scenario", "confidence_level", "rationale"]
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9._/-]+$"
+      },
+      "description": "Source files and data used"
+    }
+  },
+  "additionalProperties": false
+}

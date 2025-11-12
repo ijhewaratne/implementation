@@ -1,0 +1,124 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "branitz-energy-decision-ai"
+version = "1.0.0"
+description = "Branitz Energy Decision AI - District Heating vs Heat Pump Analysis"
+authors = [
+    {name = "Branitz Energy Team", email = "team@branitz.ai"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "jsonschema>=4.19",
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "geopandas>=0.13",
+    "shapely>=2.0",
+    "pandapipes>=0.8",
+    "pandapower>=2.14",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=24.0",
+    "ruff>=0.5",
+    "mypy>=1.8",
+    "pre-commit>=3.0",
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.ruff]
+line-length = 100
+# Core + upgrades + bugbear + simplifications + comprehensions + performance + numpy/pandas
+select = ["E", "F", "I", "UP", "B", "SIM", "C4", "PERF", "NPY", "PD", "RUF"]
+ignore = ["E501"]  # handled by Black
+fix = true
+unsafe-fixes = false
+
+[tool.ruff.isort]
+known-first-party = ["src", "agents"]
+combine-as-imports = true
+force-wrap-aliases = true
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/**/*.py" = ["B011", "S101"]
+
+[tool.mypy]
+python_version = "3.11"
+packages = ["src", "agents"]
+disallow_untyped_defs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+strict_optional = true
+# Relax gradually:
+ignore_missing_imports = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+
+[tool.mypy-pandas]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--disable-warnings",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+
+[tool.coverage.run]
+source = ["src", "agents"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/env/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]

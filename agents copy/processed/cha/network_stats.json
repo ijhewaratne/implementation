@@ -1,0 +1,17 @@
+{
+  "total_supply_length_km": 22.952111288975935,
+  "total_return_length_km": 22.95211128897594,
+  "total_main_length_km": 45.90422257795187,
+  "total_service_length_m": 13568.996630336123,
+  "unique_supply_segments": 682,
+  "unique_return_segments": 682,
+  "num_buildings": 1493,
+  "service_connections": 480,
+  "total_heat_demand_mwh": 35832.0,
+  "network_density_km_per_building": 0.03074629777491753,
+  "complete_dual_pipe_system": true,
+  "street_based_routing": true,
+  "all_connections_follow_streets": true,
+  "no_direct_connections": true,
+  "engineering_compliant": true
+}

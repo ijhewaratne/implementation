@@ -1,0 +1,585 @@
+"""
+NPV-based Diameter Optimizer for District Heating Networks
+
+This module implements a practical, unit-tested NPV-based DH pipe diameter optimizer
+with EN 13941 constraints. It integrates with existing physics models, cost models,
+and pipe catalogs to provide optimal diameter selection for district heating networks.
+
+All functions are pure, deterministic, and include comprehensive input validation.
+"""
+
+import logging
+from dataclasses import dataclass
+from typing import Dict, List, Tuple, Optional
+import math
+from collections import defaultdict
+
+from optimize.catalogs import load_pipe_catalog, PipeType
+from optimize.physics_models import segment_hydraulics, segment_heat_loss_W, G
+from optimize.cost_models import annual_pump_energy_mwhel, npv
+from optimize.en13941_checks import check_velocity, check_deltaT
+
+# Configure logging
+logger = logging.getLogger(__name__)
+
+__all__ = ["Segment", "DiameterOptimizer"]
+
+
+@dataclass
+class Segment:
+    """
+    A single network segment between two junctions, for either supply or return pipe.
+
+    Attributes
+    ----------
+    seg_id : str
+        Unique identifier used to join back to GIS rows (and to write DN later).
+    length_m : float
+        Segment length [m].
+    V_dot_m3s : float
+        Volumetric flow on this segment [m³/s] at design conditions (supply; for return,
+        pass the same V̇ or 0 if you model only supply hydraulics).
+    Q_seg_W : float
+        Downstream design thermal load carried by this segment [W] (used for sanity/reporting).
+    path_id : str
+        Identifier of the radial path from source to far consumer. Segments with the same
+        `path_id` are summed for worst-path head. If unknown, set a common value (e.g., "P0")
+        so the optimizer treats all supply segments as one path.
+    is_supply : bool
+        True if supply pipe; False if return pipe (used for head aggregation and heat-loss temperature).
+    """
+
+    seg_id: str
+    length_m: float
+    V_dot_m3s: float
+    Q_seg_W: float
+    path_id: str
+    is_supply: bool
+
+
+class DiameterOptimizer:
+    """
+    NPV-based diameter selection for district heating segments with EN 13941 checks.
+
+    Parameters
+    ----------
+    segments : list[Segment]
+        All segments (supply and optionally return).
+    design : dict
+        Required keys (units):
+          - T_supply [°C], T_return [°C], T_soil [°C]
+          - rho [kg/m³], mu [Pa·s], cp [J/kgK]
+          - eta_pump [-], hours [h/a]
+          - v_feasible_target [m/s]  (default 1.3), v_limit [m/s] (default 1.5)
+          - deltaT_min [K]           (default 30.0)
+          - K_minor [-]              (default 0.0) — applied in hydraulics per segment
+    econ : dict
+        Required keys:
+          - price_el [€/kWh_el], cost_heat_prod [€/MWh_th]
+          - years [a], r [-], o_and_m_rate [-/a]
+    catalog_csv : str
+        Path to pipe catalog CSV produced by our extractor. Must include columns:
+          dn,int | d_inner_m,float? | d_outer_m,float? | w_loss_w_per_m,float? | u_wpermk,float? | cost_eur_per_m,float?
+    """
+
+    def __init__(self, segments: List[Segment], design: Dict, econ: Dict, catalog_csv: str):
+        """Initialize the diameter optimizer with segments, design parameters, and economics."""
+        # Validate inputs
+        self._validate_segments(segments)
+        self._validate_design(design)
+        self._validate_econ(econ)
+
+        self.segments = segments
+        self.design = design
+        self.econ = econ
+
+        # Load and validate pipe catalog
+        self.catalog = self._load_catalog(catalog_csv)
+
+        # Initialize assignment: seg_id -> dn
+        self.assignment: Dict[str, int] = {}
+
+        logger.debug(
+            f"Initialized optimizer with {len(segments)} segments and {len(self.catalog)} pipe types"
+        )
+
+    def _validate_segments(self, segments: List[Segment]) -> None:
+        """Validate segment inputs."""
+        if not segments:
+            raise ValueError("At least one segment must be provided")
+
+        for seg in segments:
+            if seg.length_m <= 0:
+                raise ValueError(
+                    f"Segment {seg.seg_id}: length must be positive, got {seg.length_m} m"
+                )
+            if seg.V_dot_m3s < 0:
+                raise ValueError(
+                    f"Segment {seg.seg_id}: flow rate must be non-negative, got {seg.V_dot_m3s} m³/s"
+                )
+            if seg.Q_seg_W < 0:
+                raise ValueError(
+                    f"Segment {seg.seg_id}: thermal load must be non-negative, got {seg.Q_seg_W} W"
+                )
+
+    def _validate_design(self, design: Dict) -> None:
+        """Validate design parameters."""
+        required_keys = ["T_supply", "T_return", "T_soil", "rho", "mu", "cp", "eta_pump", "hours"]
+        for key in required_keys:
+            if key not in design:
+                raise ValueError(f"Design dict missing required key: {key}")
+
+        # Set defaults for optional parameters
+        design.setdefault("v_feasible_target", 1.3)
+        design.setdefault("v_limit", 1.5)
+        design.setdefault("deltaT_min", 30.0)
+        design.setdefault("K_minor", 0.0)
+
+        # Validate values
+        if design["eta_pump"] <= 0 or design["eta_pump"] > 1:
+            raise ValueError(f"Pump efficiency must be in (0, 1], got {design['eta_pump']}")
+        if design["hours"] <= 0:
+            raise ValueError(f"Operating hours must be positive, got {design['hours']} h")
+        if design["v_feasible_target"] <= 0:
+            raise ValueError(
+                f"Feasible velocity target must be positive, got {design['v_feasible_target']} m/s"
+            )
+        if design["v_limit"] <= 0:
+            raise ValueError(f"Velocity limit must be positive, got {design['v_limit']} m/s")
+        if design["deltaT_min"] <= 0:
+            raise ValueError(f"Minimum deltaT must be positive, got {design['deltaT_min']} K")
+
+    def _validate_econ(self, econ: Dict) -> None:
+        """Validate economic parameters."""
+        required_keys = ["price_el", "cost_heat_prod", "years", "r", "o_and_m_rate"]
+        for key in required_keys:
+            if key not in econ:
+                raise ValueError(f"Economic dict missing required key: {key}")
+
+        if econ["price_el"] < 0:
+            raise ValueError(
+                f"Electricity price must be non-negative, got {econ['price_el']} €/kWh"
+            )
+        if econ["cost_heat_prod"] < 0:
+            raise ValueError(
+                f"Heat production cost must be non-negative, got {econ['cost_heat_prod']} €/MWh"
+            )
+        if econ["years"] < 1:
+            raise ValueError(f"Project years must be at least 1, got {econ['years']}")
+        if econ["r"] < 0:
+            raise ValueError(f"Discount rate must be non-negative, got {econ['r']}")
+        if econ["o_and_m_rate"] < 0:
+            raise ValueError(f"O&M rate must be non-negative, got {econ['o_and_m_rate']}")
+
+    def _load_catalog(self, catalog_csv: str) -> List[PipeType]:
+        """Load pipe catalog and filter for valid entries."""
+        catalog = load_pipe_catalog(catalog_csv)
+
+        # Filter out entries missing d_inner_m
+        valid_catalog = [pipe for pipe in catalog if pipe.d_inner_m is not None]
+
+        if not valid_catalog:
+            raise ValueError("No valid pipe types found in catalog (all missing d_inner_m)")
+
+        # Sort by increasing DN
+        valid_catalog.sort(key=lambda x: x.dn)
+
+        logger.debug(f"Loaded {len(valid_catalog)} valid pipe types from catalog")
+        return valid_catalog
+
+    def _pick_smallest_dn_for_velocity(self, V_dot: float, v_target: float) -> int:
+        """Pick the smallest DN that satisfies velocity target."""
+        for pipe in self.catalog:
+            if pipe.d_inner_m is None:
+                continue
+
+            # Calculate velocity: v = V_dot / A = V_dot / (π * d² / 4)
+            velocity = V_dot / (math.pi * pipe.d_inner_m**2 / 4)
+
+            if velocity <= v_target:
+                return pipe.dn
+
+        # If none satisfies, pick largest DN
+        return self.catalog[-1].dn
+
+    def _group_by_path(self) -> Dict[str, List[Segment]]:
+        """Group segments by path_id."""
+        grouped = defaultdict(list)
+        for seg in self.segments:
+            grouped[seg.path_id].append(seg)
+        return dict(grouped)
+
+    def _eval_path_head(self, path_segments: List[Segment]) -> Tuple[float, float]:
+        """Evaluate total pressure drop and maximum flow for a path."""
+        total_dp = 0.0
+        max_V_dot = 0.0
+
+        for seg in path_segments:
+            if not seg.is_supply:
+                continue
+
+            if seg.seg_id not in self.assignment:
+                logger.warning(f"Segment {seg.seg_id} not in assignment, skipping")
+                continue
+
+            # Find pipe type for this DN
+            pipe = next((p for p in self.catalog if p.dn == self.assignment[seg.seg_id]), None)
+            if pipe is None or pipe.d_inner_m is None:
+                logger.warning(f"No valid pipe found for DN {self.assignment[seg.seg_id]}")
+                continue
+
+            # Calculate hydraulic parameters
+            try:
+                v, dp, h = segment_hydraulics(
+                    V_dot=seg.V_dot_m3s,
+                    d_inner=pipe.d_inner_m,
+                    L=seg.length_m,
+                    rho=self.design["rho"],
+                    mu=self.design["mu"],
+                    epsilon=4.5e-5,  # Default steel roughness
+                    K_minor=self.design["K_minor"],
+                )
+                total_dp += dp
+                max_V_dot = max(max_V_dot, seg.V_dot_m3s)
+            except Exception as e:
+                logger.error(f"Error calculating hydraulics for segment {seg.seg_id}: {e}")
+
+        return total_dp, max_V_dot
+
+    def initial_feasible(self) -> None:
+        """
+        Choose smallest DN per segment with v ≤ v_feasible_target.
+
+        After assignment, compute worst-path head for supply segments grouped by path_id.
+        """
+        logger.debug("Starting initial feasible assignment")
+
+        # Assign smallest DN that satisfies velocity target
+        for seg in self.segments:
+            if seg.V_dot_m3s > 0:  # Skip segments with zero flow
+                dn = self._pick_smallest_dn_for_velocity(
+                    seg.V_dot_m3s, self.design["v_feasible_target"]
+                )
+                self.assignment[seg.seg_id] = dn
+                logger.debug(f"Assigned DN{dn} to segment {seg.seg_id}")
+            else:
+                # For zero flow segments, assign smallest DN
+                self.assignment[seg.seg_id] = self.catalog[0].dn
+                logger.debug(f"Assigned DN{self.catalog[0].dn} to zero-flow segment {seg.seg_id}")
+
+        # Calculate worst-path head
+        path_groups = self._group_by_path()
+        worst_path_id = None
+        worst_head = 0.0
+
+        for path_id, path_segments in path_groups.items():
+            dp_path, max_V_dot = self._eval_path_head(path_segments)
+            head_m = dp_path / (self.design["rho"] * G)
+
+            if head_m > worst_head:
+                worst_head = head_m
+                worst_path_id = path_id
+
+        logger.debug(f"Worst path: {worst_path_id} with head {worst_head:.2f} m")
+
+    def evaluate_quick(self, assignment: Dict[str, int]) -> Dict:
+        """
+        Compute comprehensive metrics for a given diameter assignment.
+
+        Returns a dict with hydraulic, thermal, economic, and validation metrics.
+        """
+        logger.debug("Evaluating assignment")
+
+        # Store assignment temporarily
+        original_assignment = self.assignment.copy()
+        self.assignment = assignment.copy()
+
+        try:
+            # Initialize results
+            per_segment = {}
+            path_stats = {}
+            all_velocities = []
+            total_heat_loss_W = 0.0
+            total_capex = 0.0
+
+            # Evaluate each segment
+            for seg in self.segments:
+                if seg.seg_id not in assignment:
+                    logger.warning(f"Segment {seg.seg_id} not in assignment")
+                    continue
+
+                # Find pipe type
+                pipe = next((p for p in self.catalog if p.dn == assignment[seg.seg_id]), None)
+                if pipe is None:
+                    logger.warning(f"No pipe found for DN {assignment[seg.seg_id]}")
+                    continue
+
+                # Calculate hydraulic parameters
+                v, dp, h = segment_hydraulics(
+                    V_dot=seg.V_dot_m3s,
+                    d_inner=pipe.d_inner_m,
+                    L=seg.length_m,
+                    rho=self.design["rho"],
+                    mu=self.design["mu"],
+                    epsilon=4.5e-5,
+                    K_minor=self.design["K_minor"],
+                )
+
+                all_velocities.append(v)
+
+                # Calculate heat loss
+                heat_loss_W = 0.0
+                if seg.V_dot_m3s > 0:  # Only calculate for segments with flow
+                    if pipe.w_loss_w_per_m is not None:
+                        # Use direct W/m
+                        heat_loss_W = segment_heat_loss_W(
+                            U_or_Wpm=pipe.w_loss_w_per_m,
+                            d_outer=pipe.d_outer_m or pipe.d_inner_m + 0.01,
+                            T_f=(
+                                self.design["T_supply"]
+                                if seg.is_supply
+                                else self.design["T_return"]
+                            ),
+                            T_soil=self.design["T_soil"],
+                            L=seg.length_m,
+                            is_direct_Wpm=True,
+                        )
+                    elif pipe.u_wpermk is not None and pipe.d_outer_m is not None:
+                        # Use U-value
+                        heat_loss_W = segment_heat_loss_W(
+                            U_or_Wpm=pipe.u_wpermk,
+                            d_outer=pipe.d_outer_m,
+                            T_f=(
+                                self.design["T_supply"]
+                                if seg.is_supply
+                                else self.design["T_return"]
+                            ),
+                            T_soil=self.design["T_soil"],
+                            L=seg.length_m,
+                            is_direct_Wpm=False,
+                        )
+                    else:
+                        logger.debug(f"No heat loss data for segment {seg.seg_id}, treating as 0 W")
+
+                total_heat_loss_W += heat_loss_W
+
+                # Calculate capex
+                capex_seg = (pipe.cost_eur_per_m or 0) * seg.length_m
+                total_capex += capex_seg
+
+                # Store segment results
+                per_segment[seg.seg_id] = {
+                    "dn": assignment[seg.seg_id],
+                    "v": v,
+                    "dp": dp,
+                    "h": h,
+                    "heat_loss_W": heat_loss_W,
+                }
+
+            # Calculate path statistics
+            path_groups = self._group_by_path()
+            worst_path_id = None
+            worst_dp = 0.0
+            worst_max_V_dot = 0.0
+
+            for path_id, path_segments in path_groups.items():
+                dp_path, max_V_dot = self._eval_path_head(path_segments)
+                path_stats[path_id] = {"dp_Pa": dp_path, "V_dot_peak_m3s": max_V_dot}
+
+                if dp_path > worst_dp:
+                    worst_dp = dp_path
+                    worst_max_V_dot = max_V_dot
+                    worst_path_id = path_id
+
+            # Calculate pump energy (use worst path)
+            pump_MWh = annual_pump_energy_mwhel(
+                dp_sum_pa=worst_dp,
+                V_dot_path_m3s=worst_max_V_dot,
+                eta_pump=self.design["eta_pump"],
+                hours=self.design["hours"],
+            )
+
+            # Calculate heat loss energy
+            heat_loss_MWh = total_heat_loss_W * self.design["hours"] / 1e6
+
+            # Calculate annual OpEx
+            pump_cost = pump_MWh * self.econ["price_el"] * 1000  # Convert MWh to kWh
+            heat_loss_cost = heat_loss_MWh * self.econ["cost_heat_prod"]
+            o_and_m_cost = self.econ["o_and_m_rate"] * total_capex
+            annual_opex = pump_cost + heat_loss_cost + o_and_m_cost
+
+            # Calculate NPV
+            npv_eur = npv(total_capex, annual_opex, self.econ["years"], self.econ["r"])
+
+            # EN 13941 checks
+            v_max = max(all_velocities) if all_velocities else 0.0
+            velocity_ok = check_velocity(v_max, self.design["v_limit"])
+            deltaT_ok = check_deltaT(
+                self.design["T_supply"] - self.design["T_return"], self.design["deltaT_min"]
+            )
+
+            return {
+                "v_max": v_max,
+                "dp_path_max_Pa": worst_dp,
+                "head_required_m": worst_dp / (self.design["rho"] * G),
+                "pump_MWh": pump_MWh,
+                "heat_loss_MWh": heat_loss_MWh,
+                "capex_eur": total_capex,
+                "opex_eur_per_a": annual_opex,
+                "npv_eur": npv_eur,
+                "velocity_ok": velocity_ok,
+                "deltaT_ok": deltaT_ok,
+                "per_segment": per_segment,
+                "path_stats": path_stats,
+            }
+
+        finally:
+            # Restore original assignment
+            self.assignment = original_assignment
+
+    def local_improve(self) -> Tuple[bool, Dict[str, int], Dict]:
+        """
+        Perform best-improving hill-climb with ±1 DN step per segment.
+
+        Returns (improved, best_assignment, best_metrics) where improved is True
+        if a better solution was found.
+        """
+        logger.debug("Starting local improvement")
+
+        current_assignment = self.assignment.copy()
+        current_metrics = self.evaluate_quick(current_assignment)
+        best_npv = current_metrics["npv_eur"]
+        best_assignment = current_assignment.copy()
+        best_metrics = current_metrics.copy()
+        improved = False
+
+        # Try ±1 DN step for each segment
+        for seg in self.segments:
+            if seg.V_dot_m3s == 0:
+                continue  # Skip zero-flow segments
+
+            current_dn = current_assignment[seg.seg_id]
+
+            # Find current DN index in catalog
+            try:
+                current_idx = next(i for i, p in enumerate(self.catalog) if p.dn == current_dn)
+            except StopIteration:
+                logger.warning(
+                    f"Current DN {current_dn} not found in catalog for segment {seg.seg_id}"
+                )
+                continue
+
+            # Try smaller DN
+            if current_idx > 0:
+                candidate_assignment = current_assignment.copy()
+                candidate_assignment[seg.seg_id] = self.catalog[current_idx - 1].dn
+
+                try:
+                    candidate_metrics = self.evaluate_quick(candidate_assignment)
+
+                    # Check constraints
+                    if (
+                        candidate_metrics["velocity_ok"]
+                        and candidate_metrics["deltaT_ok"]
+                        and candidate_metrics["npv_eur"] < best_npv
+                    ):
+
+                        best_npv = candidate_metrics["npv_eur"]
+                        best_assignment = candidate_assignment.copy()
+                        best_metrics = candidate_metrics.copy()
+                        improved = True
+                        logger.debug(
+                            f"Improved segment {seg.seg_id}: DN{current_dn} → DN{self.catalog[current_idx - 1].dn}"
+                        )
+
+                except Exception as e:
+                    logger.debug(f"Failed to evaluate smaller DN for segment {seg.seg_id}: {e}")
+
+            # Try larger DN
+            if current_idx < len(self.catalog) - 1:
+                candidate_assignment = current_assignment.copy()
+                candidate_assignment[seg.seg_id] = self.catalog[current_idx + 1].dn
+
+                try:
+                    candidate_metrics = self.evaluate_quick(candidate_assignment)
+
+                    # Check constraints
+                    if (
+                        candidate_metrics["velocity_ok"]
+                        and candidate_metrics["deltaT_ok"]
+                        and candidate_metrics["npv_eur"] < best_npv
+                    ):
+
+                        best_npv = candidate_metrics["npv_eur"]
+                        best_assignment = candidate_assignment.copy()
+                        best_metrics = candidate_metrics.copy()
+                        improved = True
+                        logger.debug(
+                            f"Improved segment {seg.seg_id}: DN{current_dn} → DN{self.catalog[current_idx + 1].dn}"
+                        )
+
+                except Exception as e:
+                    logger.debug(f"Failed to evaluate larger DN for segment {seg.seg_id}: {e}")
+
+        if improved:
+            self.assignment = best_assignment.copy()
+            logger.debug(f"Local improvement found: NPV improved to {best_npv:.0f} €")
+        else:
+            logger.debug("No local improvement found")
+
+        return improved, best_assignment, best_metrics
+
+    def validate_with_pandapipes(self) -> Dict:
+        """
+        Stub for pandapipes validation.
+
+        Returns a placeholder dict indicating that real pandapipes validation
+        should be implemented in the future.
+        """
+        return {"ok": True, "note": "TODO: hook real pandapipes validation (hydraulic + thermal)."}
+
+    def run(self) -> Tuple[Dict[str, int], Dict, Dict]:
+        """
+        Orchestrate the complete optimization process.
+
+        Returns (assignment, metrics, validation) where:
+        - assignment: seg_id -> dn mapping
+        - metrics: comprehensive evaluation results
+        - validation: pandapipes validation results (stub)
+        """
+        logger.info("Starting diameter optimization")
+
+        # Step 1: Initial feasible assignment
+        self.initial_feasible()
+
+        # Step 2: Evaluate baseline
+        baseline_metrics = self.evaluate_quick(self.assignment)
+        logger.info(f"Baseline NPV: {baseline_metrics['npv_eur']:.0f} €")
+
+        # Step 3: Local improvement loop
+        iteration = 0
+        max_iterations = 10  # Prevent infinite loops
+
+        while iteration < max_iterations:
+            improved, best_assignment, best_metrics = self.local_improve()
+
+            if not improved:
+                logger.info(f"Converged after {iteration} iterations")
+                break
+
+            iteration += 1
+            logger.info(f"Iteration {iteration}: NPV = {best_metrics['npv_eur']:.0f} €")
+
+        if iteration >= max_iterations:
+            logger.warning(f"Reached maximum iterations ({max_iterations})")
+
+        # Step 4: Final validation
+        validation = self.validate_with_pandapipes()
+
+        # Step 5: Final evaluation
+        final_metrics = self.evaluate_quick(self.assignment)
+
+        logger.info(f"Optimization complete: NPV = {final_metrics['npv_eur']:.0f} €")
+        logger.info(f"Final assignment: {self.assignment}")
+
+        return self.assignment.copy(), final_metrics, validation

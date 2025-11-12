@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://branitz.ai/schemas/lfa_demand.schema.json",
+  "title": "LFA Demand Schema",
+  "description": "Schema for Load Forecasting Agent demand data with 8760h series and quantiles",
+  "x-version": "1.0.0",
+  "type": "object",
+  "required": [
+    "x-version",
+    "building_id",
+    "series",
+    "q10",
+    "q90",
+    "metadata"
+  ],
+  "properties": {
+    "x-version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "building_id": {
+      "type": "string",
+      "description": "Unique building identifier"
+    },
+    "series": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 8760,
+      "maxItems": 8760,
+      "description": "8760h heat demand series in kW"
+    },
+    "q10": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 8760,
+      "maxItems": 8760,
+      "description": "10th percentile quantile for each hour"
+    },
+    "q90": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 8760,
+      "maxItems": 8760,
+      "description": "90th percentile quantile for each hour"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "forecast_date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Date and time when forecast was generated"
+        },
+        "model_version": {
+          "type": "string",
+          "description": "Version of the forecasting model used"
+        },
+        "weather_data_source": {
+          "type": "string",
+          "description": "Source of weather data used for forecasting"
+        }
+      },
+      "required": ["forecast_date", "model_version"]
+    }
+  },
+  "additionalProperties": false
+}
