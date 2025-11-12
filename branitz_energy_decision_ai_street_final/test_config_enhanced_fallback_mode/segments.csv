@@ -1,0 +1,6 @@
+length_m,d_inner_m,v_ms,dp_bar,q_loss_Wm,mdot_kg_s,t_seg_c,pipe_category
+150.0,0.2,1.2,0.003,45.2,25.5,78.5,mains
+200.0,0.25,1.5,0.004,58.7,35.2,79.2,mains
+100.0,0.15,1.8,0.002,32.1,18.8,77.8,distribution
+75.0,0.1,0.8,0.001,18.5,8.5,65.0,services
+120.0,0.18,1.1,0.003,42.3,22.1,76.5,distribution

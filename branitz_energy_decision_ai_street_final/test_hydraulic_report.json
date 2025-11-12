@@ -1,0 +1,74 @@
+{
+  "network_summary": {
+    "total_pipes": 2,
+    "total_flow_kg_s": 0.0,
+    "total_pressure_drop_bar": 0.0,
+    "average_velocity_ms": 3.547973168867985e-06,
+    "max_velocity_ms": 0.005154353463207498,
+    "min_velocity_ms": -0.005147257516869762,
+    "average_pressure_drop_bar": 0.0
+  },
+  "pipe_results": [
+    "HydraulicResult(pipe_id='supply_supply_1', flow_rate_kg_s=0.0, velocity_ms=0.005154353463207498, pressure_drop_bar=1.0863734219768162e-05, pressure_start_bar=6.0, pressure_end_bar=5.99998913626578, temperature_start_c=70.0, temperature_end_c=70.0, head_loss_m=0.0, reynolds_number=1011.3287795275836, friction_factor=0.08290565138394325)",
+    "HydraulicResult(pipe_id='return_return_1', flow_rate_kg_s=0.0, velocity_ms=-0.005147257516869762, pressure_drop_bar=-1.0863734219768162e-05, pressure_start_bar=5.99998913626578, pressure_end_bar=6.0, temperature_start_c=70.0, temperature_end_c=70.0, head_loss_m=0.0, reynolds_number=1007.6863921028204, friction_factor=0.08313439466794359)"
+  ],
+  "validation_result": "SimulationValidationResult(is_valid=True, convergence_achieved=True, violations=[], warnings=[{'type': 'velocity_below_minimum', 'severity': 'medium', 'description': 'Velocity 0.01 m/s below minimum 0.5 m/s', 'pipe_id': 'supply_supply_1', 'value': 0.005154353463207498, 'limit': 0.5}, {'type': 'velocity_below_minimum', 'severity': 'medium', 'description': 'Velocity -0.01 m/s below minimum 0.5 m/s', 'pipe_id': 'return_return_1', 'value': -0.005147257516869762, 'limit': 0.5}], recommendations=[], summary={'total_pipes': 2, 'compliant_pipes': 2, 'compliance_rate': 1.0, 'violation_count': 0, 'warning_count': 2})",
+  "standards_compliance": {
+    "EN_13941": {
+      "standard_name": "EN 13941",
+      "is_compliant": true,
+      "compliance_rate": 1.0,
+      "violations": [],
+      "warnings": [
+        {
+          "type": "velocity_below_minimum",
+          "severity": "medium",
+          "description": "Velocity 0.00 m/s below EN 13941 minimum 0.1 m/s",
+          "pipe_id": "supply_1",
+          "value": 0,
+          "limit": 0.1
+        },
+        {
+          "type": "velocity_below_minimum",
+          "severity": "medium",
+          "description": "Velocity 0.00 m/s below EN 13941 minimum 0.1 m/s",
+          "pipe_id": "return_1",
+          "value": 0,
+          "limit": 0.1
+        }
+      ],
+      "recommendations": [],
+      "summary": {
+        "total_pipes": 2,
+        "compliant_pipes": 2,
+        "violation_count": 0,
+        "warning_count": 2
+      }
+    },
+    "DIN_1988": {
+      "standard_name": "DIN 1988",
+      "is_compliant": true,
+      "compliance_rate": 1.0,
+      "violations": [],
+      "warnings": [],
+      "recommendations": [],
+      "summary": {
+        "total_pipes": 2,
+        "compliant_pipes": 2,
+        "violation_count": 0,
+        "warning_count": 0
+      }
+    }
+  },
+  "performance_metrics": {
+    "total_flow_kg_s": 0.0,
+    "total_pressure_drop_bar": 0.0,
+    "pump_power_kw": 0.0,
+    "average_velocity_ms": 3.547973168867985e-06,
+    "max_velocity_ms": 0.005154353463207498,
+    "min_velocity_ms": -0.005147257516869762,
+    "average_reynolds_number": 1009.507585815202,
+    "average_friction_factor": 0.08302002302594341
+  },
+  "recommendations": []
+}

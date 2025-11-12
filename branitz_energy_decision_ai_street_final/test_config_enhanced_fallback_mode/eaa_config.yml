@@ -1,0 +1,50 @@
+annual_heat_mwh_fallback: 10000
+capex_per_m_eur:
+  default: 450
+  gte_0_200mm: 800
+  lt_0_100mm: 300
+  lt_0_200mm: 500
+cha_input_validation:
+  fail_on_validation_error: true
+  required_columns:
+  - length_m
+  - d_inner_m
+  - v_ms
+  - dp_bar
+  - q_loss_Wm
+  - mdot_kg_s
+  - t_seg_c
+  - pipe_category
+  schema_path: schemas/cha_output.schema.json
+  validate_before_processing: true
+  validate_data_ranges: true
+  validate_pipe_categories: true
+cp_water_j_per_kgk: 4180
+delta_t_k: 30
+design_full_load_hours: 2000
+discount_rate: 0.06
+economic_analysis:
+  include_hydraulic_kpis: false
+  include_thermal_losses: false
+  pump_maintenance_factor: 0.05
+  thermal_loss_cost_eur_per_mwh: 0.15
+elec_price_eur_per_kwh: 0.22
+grid_co2_kg_per_kwh: 0.35
+hydraulic_integration:
+  enabled: false
+  pump_efficiency: 0.75
+  thermal_loss_factor: 1.0
+  use_actual_pump_power: false
+  use_thermal_losses: false
+lifetime_years: 25
+n_samples: 100
+om_fixed_eur_per_mwh: 4.0
+opex_fraction_of_capex: 0.02
+paths:
+  cha_segments: test_config_enhanced_fallback_mode/segments.csv
+  dha_feeders: test_config_enhanced_fallback_mode/feeder_loads.csv
+  lfa_dir: test_config_enhanced_fallback_mode/lfa
+  out_mc: test_config_enhanced_fallback_mode/mc.parquet
+  out_summary: test_config_enhanced_fallback_mode/summary.csv
+pump_efficiency: 0.75
+seed: 42

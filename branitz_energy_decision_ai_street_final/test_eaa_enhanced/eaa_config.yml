@@ -1,0 +1,24 @@
+annual_heat_mwh_fallback: 10000
+capex_per_m_eur:
+  default: 450
+  gte_0_200mm: 800
+  lt_0_100mm: 300
+  lt_0_200mm: 500
+cp_water_j_per_kgk: 4180
+delta_t_k: 30
+design_full_load_hours: 2000
+discount_rate: 0.06
+elec_price_eur_per_kwh: 0.22
+grid_co2_kg_per_kwh: 0.35
+lifetime_years: 25
+n_samples: 100
+om_fixed_eur_per_mwh: 4.0
+opex_fraction_of_capex: 0.02
+paths:
+  cha_segments: test_eaa_enhanced/segments.csv
+  dha_feeders: test_eaa_enhanced/feeder_loads.csv
+  lfa_dir: test_eaa_enhanced/lfa
+  out_mc: test_eaa_enhanced/mc.parquet
+  out_summary: test_eaa_enhanced/summary.csv
+pump_efficiency: 0.75
+seed: 42

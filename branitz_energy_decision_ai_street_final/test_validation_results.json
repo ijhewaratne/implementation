@@ -1,0 +1,82 @@
+{
+  "export_timestamp": "2025-09-24T16:15:54.757757",
+  "export_version": "1.0.0",
+  "validation_results": {
+    "validation_timestamp": "2025-09-24T16:15:54.754973",
+    "output_directory": "test_cha_outputs",
+    "validated_files": 1,
+    "total_violations": 0,
+    "standards_compliance": {},
+    "file_results": {
+      "cha_output_example.json": {
+        "status": "valid",
+        "validated_at": "2025-09-24T16:15:54.757459",
+        "file_path": "test_cha_outputs/cha_output_example.json",
+        "file_size_bytes": 4377,
+        "schema_validation": {
+          "valid": true,
+          "errors": [],
+          "warnings": [],
+          "message": "CHA output data is valid"
+        },
+        "standards_compliance": {
+          "overall_status": "PASS",
+          "standards_results": {
+            "EN_13941": "PASS",
+            "DIN_1988": "PASS",
+            "VDI_2067": "PASS"
+          },
+          "violations": [],
+          "summary": {
+            "total_violations": 0,
+            "critical_violations": 0,
+            "warning_violations": 0,
+            "standards_passed": 3
+          }
+        },
+        "performance_validation": {
+          "status": "PASS",
+          "violations": [],
+          "metrics": {
+            "specific_pump_power": 0.5483870967741935,
+            "specific_thermal_loss": 17.833333333333332
+          }
+        },
+        "data_quality": {
+          "status": "PASS",
+          "issues": [],
+          "completeness": {
+            "nodes": 3,
+            "pipes": 2
+          }
+        },
+        "total_violations": 0
+      }
+    },
+    "summary": {
+      "total_files": 1,
+      "valid_files": 1,
+      "invalid_files": 0,
+      "error_files": 0,
+      "success_rate": 1.0,
+      "total_violations": 0,
+      "standards_compliance": {
+        "EN_13941": {
+          "PASS": 1,
+          "FAIL": 0,
+          "WARNING": 0
+        },
+        "DIN_1988": {
+          "PASS": 1,
+          "FAIL": 0,
+          "WARNING": 0
+        },
+        "VDI_2067": {
+          "PASS": 1,
+          "FAIL": 0,
+          "WARNING": 0
+        }
+      }
+    }
+  }
+}

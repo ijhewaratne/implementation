@@ -1,0 +1,53 @@
+[
+  {
+    "diameter_m": 0.04,
+    "diameter_nominal": "DN 40",
+    "velocity_ms": 0.40692100401895925,
+    "pressure_drop_bar": 0.005059647596682372,
+    "pressure_drop_pa_per_m": 10.119295193364746,
+    "reynolds_number": 39394.7878940335,
+    "friction_factor": 0.005,
+    "cost_per_m_eur": 65.0,
+    "total_cost_eur": 3250.0,
+    "standards_compliance": {
+      "EN_13941": true,
+      "DIN_1988": true
+    },
+    "violations": [],
+    "recommendations": []
+  },
+  {
+    "diameter_m": 0.063,
+    "diameter_nominal": "DN 63",
+    "velocity_ms": 1.6403970935508563,
+    "pressure_drop_bar": 0.20882258621154992,
+    "pressure_drop_pa_per_m": 104.41129310577496,
+    "reynolds_number": 250125.63742243493,
+    "friction_factor": 0.005,
+    "cost_per_m_eur": 93.75,
+    "total_cost_eur": 18750.0,
+    "standards_compliance": {
+      "EN_13941": true,
+      "DIN_1988": true
+    },
+    "violations": [],
+    "recommendations": []
+  },
+  {
+    "diameter_m": 0.2,
+    "diameter_nominal": "DN 200",
+    "velocity_ms": 0.8138420080379185,
+    "pressure_drop_bar": 0.08095436154691796,
+    "pressure_drop_pa_per_m": 8.095436154691797,
+    "reynolds_number": 393947.878940335,
+    "friction_factor": 0.005,
+    "cost_per_m_eur": 265.0,
+    "total_cost_eur": 265000.0,
+    "standards_compliance": {
+      "EN_13941": true,
+      "DIN_1988": true
+    },
+    "violations": [],
+    "recommendations": []
+  }
+]
