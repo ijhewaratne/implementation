@@ -184,4 +184,3 @@ if __name__ == "__main__":
             cfg = yaml.safe_load(f)
     res = run(cfg or {})
     print(json.dumps(res, indent=2))
-

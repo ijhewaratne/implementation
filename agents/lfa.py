@@ -134,14 +134,6 @@ class LoadForecastingAgent:
         buildings_df = pd.read_parquet(self.buildings_path)
         logger.info(f"Loaded {len(buildings_df)} buildings")
         
-        # Check for physics features
-        physics_features = ['H_tr', 'H_ve', 'sanierungs_faktor']
-        available_physics = [f for f in physics_features if f in buildings_df.columns]
-        if available_physics:
-            logger.info(f"Found physics features: {available_physics}")
-        else:
-            logger.warning("No physics features found in building data")
-        
         # Load weather data
         if not Path(self.weather_path).exists():
             raise FileNotFoundError(f"Weather file not found: {self.weather_path}")
@@ -155,36 +147,26 @@ class LoadForecastingAgent:
             missing_hours = expected_hours - len(weather_df)
             raise ValueError(f"Weather data incomplete: missing {missing_hours} hours")
         
-        # Load optional meter data (synthetic labels from ETL)
+        # Load optional meter data
         meters_df = None
         if Path(self.meters_dir).exists():
             meter_files = list(Path(self.meters_dir).glob("*.parquet"))
             if meter_files:
-                logger.info(f"Found {len(meter_files)} meter files (synthetic labels)")
-                # Load all meter data into a single DataFrame
-                meter_data = []
-                for meter_file in meter_files:
-                    building_id = meter_file.stem  # filename without extension
-                    df = pd.read_parquet(meter_file)
-                    df['building_id'] = building_id
-                    meter_data.append(df)
-                
-                if meter_data:
-                    meters_df = pd.concat(meter_data, ignore_index=True)
-                    logger.info(f"Loaded synthetic meter data: {len(meters_df)} rows")
+                meters_df = pd.concat([pd.read_parquet(f) for f in meter_files], ignore_index=True)
+                logger.info(f"Loaded meter data: {len(meters_df)} rows from {len(meter_files)} files")
         
         return buildings_df, weather_df, meters_df
     
     def engineer_features(self, weather_df: pd.DataFrame, buildings_df: pd.DataFrame) -> pd.DataFrame:
         """
-        Engineer features for forecasting, including physics features.
+        Engineer features for forecasting.
         
         Args:
             weather_df: Weather data with hourly timestamps
-            buildings_df: Building metadata with physics coefficients
+            buildings_df: Building metadata
             
         Returns:
-            DataFrame with engineered features including physics features
+            DataFrame with engineered features
         """
         logger.info("Engineering features...")
         
@@ -244,15 +226,11 @@ class LoadForecastingAgent:
             features_df['T_out_rolling_24h'] = features_df['T_out'].rolling(24, min_periods=1).mean()
             features_df['T_out_rolling_7d'] = features_df['T_out'].rolling(168, min_periods=1).mean()
         
-        # Physics features (building-specific, will be joined later)
-        physics_features = [
-            'H_tr', 'H_ve', 'sanierungs_faktor', 'floor_area', 'wall_area', 'roof_area', 
-            'volume', 'height', 'U_wall', 'U_roof', 'U_floor', 'U_window',
-            'window_share', 'T_in', 'n', 'year'
-        ]
-        available_physics_features = [f for f in physics_features if f in buildings_df.columns]
+        # Building features (will be merged later)
+        building_features = ['floor_area', 'function', 'year', 'insulation_quality']
+        available_building_features = [f for f in building_features if f in buildings_df.columns]
         
-        logger.info(f"Engineered {len(features_df.columns)} weather features + {len(available_physics_features)} physics features")
+        logger.info(f"Engineered {len(features_df.columns)} features")
         return features_df
     
     def _is_holiday(self, dates: pd.DatetimeIndex) -> pd.Series:
@@ -271,196 +249,79 @@ class LoadForecastingAgent:
     def generate_synthetic_training_data(self, features_df: pd.DataFrame, buildings_df: pd.DataFrame) -> pd.DataFrame:
         """
         Generate synthetic training data based on building characteristics and weather.
-        Uses configurable label source: meters, physics, or heuristic.
         
         Args:
             features_df: Engineered features
-            buildings_df: Building metadata with physics coefficients
+            buildings_df: Building metadata
             
         Returns:
             DataFrame with synthetic demand data for training
         """
         logger.info("Generating synthetic training data...")
         
-        # Determine label source from configuration
-        label_source = self.config.get('labels', {}).get('source', 'physics')
-        logger.info(f"Using label source: {label_source}")
-        
         training_data = []
         
         for _, building in buildings_df.iterrows():
             building_id = building['building_id']
+            floor_area = building.get('floor_area', 100.0)
+            building_type = building.get('function', 'residential')
+            year_built = building.get('year', 1990)
             
-            if label_source == "meters":
-                # Use real meter data if available
-                demand_data = self._load_meter_data(building_id, features_df)
-            elif label_source == "physics":
-                # Use physics-based calculation
-                has_physics = all(f in building for f in ['H_tr', 'H_ve', 'sanierungs_faktor', 'T_in'])
-                if has_physics:
-                    demand_data = self._generate_physics_based_demand(features_df, building)
-                else:
-                    logger.warning(f"Physics features missing for building {building_id}, falling back to heuristic")
-                    demand_data = self._generate_traditional_demand(features_df, building)
-            elif label_source == "heuristic":
-                # Use traditional synthetic generation
-                demand_data = self._generate_traditional_demand(features_df, building)
-            else:
-                raise ValueError(f"Unknown label source: {label_source}")
+            # Base demand characteristics by building type
+            base_demand_kw = self._get_base_demand(building_type, floor_area, year_built)
             
-            training_data.extend(demand_data)
+            # Generate 8760 hours of synthetic demand
+            for hour_idx, (timestamp, features) in enumerate(features_df.iterrows()):
+                # Base demand
+                demand = base_demand_kw
+                
+                # Weather influence
+                if 'heating_degree_days' in features:
+                    hdd = features['heating_degree_days']
+                    demand *= (1.0 + 0.02 * hdd)  # 2% increase per degree day
+                
+                # Time-of-day pattern
+                hour = features['hour']
+                if 6 <= hour <= 9:  # Morning peak
+                    demand *= 1.3
+                elif 17 <= hour <= 21:  # Evening peak
+                    demand *= 1.4
+                elif 23 <= hour or hour <= 5:  # Night
+                    demand *= 0.6
+                
+                # Day-of-week pattern
+                if features['is_weekend']:
+                    demand *= 1.1  # Higher weekend demand
+                
+                # Seasonal pattern
+                day_of_year = features['day_of_year']
+                seasonal_factor = 1.0 + 0.4 * np.cos(2 * np.pi * (day_of_year - 15) / 365)
+                demand *= seasonal_factor
+                
+                # Add noise
+                noise = np.random.normal(0, 0.05)  # 5% noise
+                demand *= (1.0 + noise)
+                
+                # Ensure positive
+                demand = max(0.0, demand)
+                
+                # Add building features to training data
+                building_features = {}
+                for col in building.index:
+                    if col not in ['building_id', 'id']:  # Skip ID columns
+                        building_features[col] = building[col]
+                
+                training_data.append({
+                    'building_id': building_id,
+                    'timestamp': timestamp,
+                    'demand_kw': demand,
+                    **features.to_dict(),
+                    **building_features
+                })
         
         training_df = pd.DataFrame(training_data)
-        logger.info(f"Generated {len(training_df)} training samples using {label_source} labels")
+        logger.info(f"Generated {len(training_df)} training samples")
         return training_df
-    
-    def _load_meter_data(self, building_id: str, features_df: pd.DataFrame) -> List[Dict]:
-        """
-        Load real meter data for a building.
-        
-        Args:
-            building_id: Building identifier
-            features_df: Weather features
-            
-        Returns:
-            List of demand data dictionaries
-        """
-        meter_file = Path(self.meters_dir) / f"{building_id}.parquet"
-        
-        if meter_file.exists():
-            meter_df = pd.read_parquet(meter_file)
-            logger.debug(f"Loaded meter data for building {building_id}")
-            
-            # Merge with weather features
-            demand_data = []
-            for _, row in meter_df.iterrows():
-                timestamp = row['timestamp']
-                demand_kw = row['demand_kw']
-                
-                # Find corresponding weather features
-                weather_row = features_df.loc[features_df.index == timestamp]
-                if not weather_row.empty:
-                    features = weather_row.iloc[0].to_dict()
-                    demand_data.append({
-                        'building_id': building_id,
-                        'timestamp': timestamp,
-                        'demand_kw': demand_kw,
-                        **features
-                    })
-            
-            return demand_data
-        else:
-            logger.warning(f"No meter data found for building {building_id}")
-            return []
-    
-    def _generate_physics_based_demand(self, features_df: pd.DataFrame, building: pd.Series) -> List[Dict]:
-        """
-        Generate physics-based heat demand using DIN formula.
-        
-        Args:
-            features_df: Weather features
-            building: Building data with physics coefficients
-            
-        Returns:
-            List of demand data dictionaries
-        """
-        building_id = building['id']
-        T_in = building['T_in']
-        H_tr = building['H_tr']
-        H_ve = building['H_ve']
-        sanierungs_faktor = building['sanierungs_faktor']
-        
-        demand_data = []
-        
-        for timestamp, features in features_df.iterrows():
-            T_out = features['T_out']
-            
-            # DIN heat demand formula: P_h(t) = (H_tr + H_ve) * (T_in - T_out) * sanierungs_faktor
-            P_h = (H_tr + H_ve) * (T_in - T_out) * sanierungs_faktor
-            
-            # Clip at 0 (no cooling) and convert to kW
-            P_h = max(0.0, P_h) / 1000.0
-            
-            # Add building features to the data
-            building_features = {col: building[col] for col in building.index 
-                               if col in ['H_tr', 'H_ve', 'sanierungs_faktor', 'floor_area', 
-                                        'wall_area', 'roof_area', 'volume', 'height',
-                                        'U_wall', 'U_roof', 'U_floor', 'U_window',
-                                        'window_share', 'T_in', 'n', 'year']}
-            
-            demand_data.append({
-                'building_id': building_id,
-                'timestamp': timestamp,
-                'demand_kw': P_h,
-                **features.to_dict(),
-                **building_features
-            })
-        
-        return demand_data
-    
-    def _generate_traditional_demand(self, features_df: pd.DataFrame, building: pd.Series) -> List[Dict]:
-        """
-        Generate traditional synthetic demand (fallback method).
-        
-        Args:
-            features_df: Weather features
-            building: Building data
-            
-        Returns:
-            List of demand data dictionaries
-        """
-        building_id = building['building_id']
-        floor_area = building.get('floor_area', 100.0)
-        building_type = building.get('function', 'residential')
-        year_built = building.get('year', 1990)
-        
-        # Base demand characteristics by building type
-        base_demand_kw = self._get_base_demand(building_type, floor_area, year_built)
-        
-        demand_data = []
-        
-        for timestamp, features in features_df.iterrows():
-            # Base demand
-            demand = base_demand_kw
-            
-            # Weather influence
-            if 'heating_degree_days' in features:
-                hdd = features['heating_degree_days']
-                demand *= (1.0 + 0.02 * hdd)  # 2% increase per degree day
-            
-            # Time-of-day pattern
-            hour = features['hour']
-            if 6 <= hour <= 9:  # Morning peak
-                demand *= 1.3
-            elif 17 <= hour <= 21:  # Evening peak
-                demand *= 1.4
-            elif 23 <= hour or hour <= 5:  # Night
-                demand *= 0.6
-            
-            # Day-of-week pattern
-            if features['is_weekend']:
-                demand *= 1.1  # Higher weekend demand
-            
-            # Seasonal pattern
-            day_of_year = features['day_of_year']
-            seasonal_factor = 1.0 + 0.4 * np.cos(2 * np.pi * (day_of_year - 15) / 365)
-            demand *= seasonal_factor
-            
-            # Add noise
-            noise = np.random.normal(0, 0.05)  # 5% noise
-            demand *= (1.0 + noise)
-            
-            # Ensure positive
-            demand = max(0.0, demand)
-            
-            demand_data.append({
-                'building_id': building_id,
-                'timestamp': timestamp,
-                'demand_kw': demand,
-                **features.to_dict()
-            })
-        
-        return demand_data
     
     def _get_base_demand(self, building_type: str, floor_area: float, year_built: int) -> float:
         """Get base demand in kW based on building characteristics."""
