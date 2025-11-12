@@ -1,0 +1,37 @@
+# Branitz DH Configuration File
+# This file contains default configuration settings for the DH pipeline
+
+data:
+  inputs_dir: "data/inputs"
+  outputs_dir: "data/outputs"
+  cache_dir: "data/cache"
+  catalogs_dir: "data/catalogs"
+
+processing:
+  max_workers: 4
+  chunk_size: 1000
+  enable_caching: true
+
+visualization:
+  default_style: "seaborn-v0_8"
+  figure_size: [12, 8]
+  save_format: "png"
+
+costs:
+  track_costs: true
+  currency: "USD"
+  cost_per_token: 0.0001
+
+# API Configuration (optional)
+api:
+  openai:
+    model: "gpt-3.5-turbo"
+    max_tokens: 1000
+  anthropic:
+    model: "claude-3-sonnet-20240229"
+    max_tokens: 1000
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
