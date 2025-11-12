@@ -1,0 +1,70 @@
+"""
+LV Feeder Analyzer
+
+Contract-first implementation for LV feeder grid analysis without hard pandapower dependency.
+"""
+
+from typing import Dict, List
+import pandas as pd
+
+
+def map_buildings_to_feeders(buildings_df: pd.DataFrame, feeders_df: pd.DataFrame) -> Dict[str, str]:
+    """
+    Contract: return building_id -> feeder_id. 
+    
+    For the stub, if both frames have 'building_id' and 'feeder_id',
+    map by merge; else assign all buildings to 'F0'. CRS/geometry omitted in stub.
+    """
+    if ("building_id" in buildings_df.columns and 
+        "building_id" in feeders_df.columns and 
+        "feeder_id" in feeders_df.columns):
+        m = dict(pd.merge(
+            buildings_df[["building_id"]], 
+            feeders_df[["building_id", "feeder_id"]], 
+            on="building_id", 
+            how="left"
+        ).fillna({"feeder_id": "F0"}).set_index("building_id")["feeder_id"])
+        return {str(k): str(v) for k, v in m.items()}
+    return {str(b): "F0" for b in buildings_df["building_id"].astype(str)}
+
+
+def pick_top10_hours(load_df: pd.DataFrame) -> List[int]:
+    """
+    Input: DataFrame indexed 0..8759 with column 'total_kw'. 
+    Return top-10 hour indices by total_kw.
+    """
+    if "total_kw" not in load_df.columns:
+        raise ValueError("load_df must contain 'total_kw'")
+    return list(load_df["total_kw"].nlargest(10).index.astype(int))
+
+
+def run_feeder_studies(feeders_model, building_to_feeder: Dict[str, str], 
+                      hourly_building_kw: pd.DataFrame, hours: List[int]) -> pd.DataFrame:
+    """
+    Contract: return a tidy frame with columns:
+      feeder_id,hour,utilization_max,voltage_min,voltage_max,violates_util>=0.8,violates_voltage_outside_±10%
+    
+    Stub: compute fake utilization/voltage from aggregated loads; flag violations using simple rules.
+    """
+    rows = []
+    for h in hours:
+        col = str(h)
+        if col in hourly_building_kw.columns:
+            feeder_sum = hourly_building_kw.groupby(building_to_feeder, axis=0).sum(numeric_only=True)[col]
+        else:
+            feeder_sum = hourly_building_kw.groupby(building_to_feeder, axis=0).sum(numeric_only=True).iloc[:, h]
+        
+        for fid, kw in feeder_sum.items():
+            util = float(kw)/1000.0  # pretend 1 MW rating
+            vmin = 1.0 - 0.15*util
+            vmax = 1.0 + 0.05*util
+            rows.append(dict(
+                feeder_id=fid, 
+                hour=int(h), 
+                utilization_max=util,
+                voltage_min=vmin, 
+                voltage_max=vmax,
+                **{"violates_util>=0.8": util >= 0.8,
+                   "violates_voltage_outside_±10%": (vmin < 0.9 or vmax > 1.1)}
+            ))
+    return pd.DataFrame(rows)

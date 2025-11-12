@@ -1,0 +1,75 @@
+# Branitz Energy Decision — Recommendation
+
+**Scenario:** {{ scenario_name }}  
+**Created (UTC):** {{ kpi.project_info.created_utc }}
+
+---
+
+## Executive Decision
+
+**Recommended Option:** **{{ kpi.recommendation.preferred_scenario }}**  
+**Rationale:** {{ kpi.recommendation.rationale }}
+
+---
+
+## KPI Snapshot (from artifacts)
+
+| Metric | Value |
+|---|---:|
+| LCoH (€/MWh) | {{ kpi.economic_metrics.lcoh_eur_per_mwh }} |
+| NPV (€) | {{ kpi.economic_metrics.npv_eur }} |
+| DH losses (%) | {{ kpi.technical_metrics.dh_losses_pct }} |
+| Pump power (kW) | {{ kpi.technical_metrics.pump_kw }} |
+| Max feeder util. (%) | {{ kpi.technical_metrics.feeder_max_utilization_pct }} |
+
+*(All values above are read directly from `processed/kpi/kpi_summary.json`.)*
+
+---
+
+## EAA Summary (distribution, from `eval/te/summary.csv`)
+
+| Metric | Mean | Median | 2.5% | 97.5% |
+|---|---:|---:|---:|---:|
+{% for row in eaa_summary %}
+| {{ row.metric }} | {{ row.mean }} | {{ row.median }} | {{ row.p2_5 }} | {{ row.p97_5 }} |
+{% endfor %}
+
+---
+
+## CHA & DHA Quick Tables (if available)
+
+{% if cha_head %}
+**CHA segments (head)**
+
+| pipe_id | length_m | d_inner_m | v_ms | p_from_bar | p_to_bar |
+|---:|---:|---:|---:|---:|---:|
+{% for r in cha_head %}
+| {{ r.pipe_id }} | {{ r.length_m }} | {{ r.d_inner_m }} | {{ r.v_ms }} | {{ r.p_from_bar }} | {{ r.p_to_bar }} |
+{% endfor %}
+{% endif %}
+
+{% if dha_head %}
+**DHA feeder loads (head)**
+
+| feeder_id | hour | p_kw | utilization_pct |
+|---|---:|---:|---:|
+{% for r in dha_head %}
+| {{ r.feeder_id }} | {{ r.hour }} | {{ r.p_kw }} | {{ r.utilization_pct }} |
+{% endfor %}
+{% endif %}
+
+---
+
+## Sources (from KPI payload)
+
+{% for s in kpi.sources %}
+- {{ s }}
+{% endfor %}
+
+---
+
+## Referenced Artifacts
+
+{% for a in artifacts %}
+- {{ a }}
+{% endfor %}
