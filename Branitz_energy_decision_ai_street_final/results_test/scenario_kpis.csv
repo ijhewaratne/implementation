@@ -1,0 +1,5 @@
+scenario,type,lcoh_eur_per_mwh,co2_t_per_a,comment,max_feeder_load_percent,transformer_overloads
+base_dh,DH,,,The hydraulic calculation did not converge to a solution.,,
+low_temp_dh,DH,,,The hydraulic calculation did not converge to a solution.,,
+full_hp,HP,110.37,99.43,,82.0,1.0
+hp_with_grid_reinforcement,HP,110.37,99.43,,82.0,1.0
