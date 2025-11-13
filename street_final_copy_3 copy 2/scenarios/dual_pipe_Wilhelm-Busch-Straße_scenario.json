@@ -1,0 +1,18 @@
+{
+  "name": "dual_pipe_Wilhelm-Busch-Stra\u00dfe",
+  "description": "Dual-pipe DH network for Wilhelm-Busch-Stra\u00dfe",
+  "type": "DH",
+  "params": {
+    "supply_temp": 70,
+    "return_temp": 40,
+    "tech": "dual_pipe_dh",
+    "street_name": "Wilhelm-Busch-Stra\u00dfe",
+    "num_buildings": 23,
+    "selection_type": "individual_street"
+  },
+  "building_file": "scenarios/buildings_Wilhelm-Busch-Stra\u00dfe.geojson",
+  "network_file": "results_test/streets.geojson",
+  "weather": {
+    "file": "data/csv/TRY2015_517475143730_Jahr.dat"
+  }
+}

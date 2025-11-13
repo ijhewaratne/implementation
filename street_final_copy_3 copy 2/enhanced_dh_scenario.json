@@ -1,0 +1,13 @@
+{
+  "name": "enhanced_branitz_dh",
+  "type": "DH",
+  "building_file": "results_test/buildings_prepared.geojson",
+  "streets_file": "results_test/streets.geojson",
+  "params": {
+    "supply_temp": 70,
+    "return_temp": 40,
+    "main_diameter": 0.6,
+    "service_diameter": 0.05
+  },
+  "description": "Enhanced district heating simulation with realistic service connections"
+} 

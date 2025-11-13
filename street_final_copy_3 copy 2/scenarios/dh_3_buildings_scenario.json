@@ -1,0 +1,10 @@
+{
+  "name": "dh_3_buildings_test",
+  "type": "DH",
+  "building_file": "scenarios/buildings_3_test.geojson",
+  "params": {
+    "supply_temp": 70,
+    "return_temp": 40,
+    "main_diameter": 0.6
+  }
+} 
